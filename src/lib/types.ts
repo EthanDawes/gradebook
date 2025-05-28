@@ -1,14 +1,14 @@
-interface Semester {
+export interface Semester {
     // Example: Spring 2025
     name: string,
     // Date
     start: number,
     // Date
     end: number,
-    classes: Class[],
+    courses: Course[],
 }
 
-interface Class {
+export interface Course {
     name: string,
     categories: Category[],
     // List of URLs where class grades are posted
@@ -16,19 +16,19 @@ interface Class {
     // grade scale name
     gradeScale: string,
     // Letter grade to decimal percentage
-    gradeCuttofs: Record<string, number>,
+    gradeCutoffs: Record<string, number>,
     // grade from gradeScale that represents the grade the average will be curved to
     curve?: string,
 }
 
-interface Category {
+export interface Category {
     name: string,
     // Decimal percentage
     weight: number,
     grades: Grade[],
 }
 
-interface Grade {
+export interface Grade {
     // URL
     source: string,
     // Date
@@ -41,14 +41,14 @@ interface Grade {
     classAverage?: number,
 }
 
-interface GradeScale {
+export interface GradeScale {
     name: string,
     scale: string[],
     average: string,
 }
 
 // Don't sync b/c 8kb is not enough for even 1 semester (see data mocks)
-interface Storage {
+export interface Storage {
     gradeScales: GradeScale[],
     semesters: Semester[],
 }
