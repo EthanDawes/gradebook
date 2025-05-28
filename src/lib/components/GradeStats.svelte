@@ -1,9 +1,9 @@
 <script lang="ts">
     interface Props {
-        classItem: any;
+        courseItem: any;
     }
 
-    let { classItem }: Props = $props();
+    let { courseItem }: Props = $props();
 </script>
 
 <div class="mt-6 bg-gray-50 rounded-lg p-4">

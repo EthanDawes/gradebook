@@ -1,11 +1,11 @@
 <script lang="ts">
-    import type { Class } from '$lib/types.js';
+    import type { Course } from '$lib/types.js';
 
     interface Props {
-        classItem: Class;
+        courseItem: Course;
     }
 
-    let { classItem }: Props = $props();
+    let { courseItem }: Props = $props();
     let curveToB = $state(false);
 </script>
 

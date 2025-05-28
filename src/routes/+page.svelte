@@ -1,7 +1,7 @@
 <script lang="ts">
     import { gradeStore } from '$lib/stores.svelte.js';
     import Sidebar from '$lib/components/Sidebar.svelte';
-    import ClassHeader from '$lib/components/ClassHeader.svelte';
+    import CourseHeader from '$lib/components/CourseHeader.svelte';
     import GradeCutoffs from '$lib/components/GradeCutoffs.svelte';
     import GradesTable from '$lib/components/GradesTable.svelte';
     import GradeStats from '$lib/components/GradeStats.svelte';
@@ -13,14 +13,14 @@
 
     <!-- Main Content -->
     <div class="flex-1 p-6">
-        {#if gradeStore.selectedClass}
-            {@const classItem = gradeStore.selectedClass}
-            {@const currentGrade = gradeStore.calculateClassGrade(classItem)}
+        {#if gradeStore.selectedCourse}
+            {@const courseItem = gradeStore.selectedCourse}
+            {@const currentGrade = gradeStore.calculateCourseGrade(courseItem)}
 
-            <ClassHeader {classItem} {currentGrade} />
-            <GradeCutoffs {classItem} />
-            <GradesTable {classItem} />
-            <GradeStats {classItem} />
+            <CourseHeader {courseItem} {currentGrade} />
+            <GradeCutoffs {courseItem} />
+            <GradesTable {courseItem} />
+            <GradeStats {courseItem} />
         {:else}
             <EmptyState />
         {/if}

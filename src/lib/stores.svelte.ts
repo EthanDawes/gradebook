@@ -135,7 +135,7 @@ function saveToStorage(data: Storage) {
 class GradeStore {
     private storage = $state<Storage>(loadFromStorage());
     currentSemester = $state<Semester>(this.storage.semesters[0]);
-    selectedClass = $state<Course | null>(null);
+    selectedCourse = $state<Course | null>(null);
 
     get semesters() {
         return this.storage.semesters;
@@ -151,18 +151,18 @@ class GradeStore {
 
     setSemester(semester: Semester) {
         this.currentSemester = semester;
-        this.selectedClass = null;
+        this.selectedCourse = null;
     }
 
-    setSelectedClass(classItem: Course) {
-        this.selectedClass = classItem;
+    setSelectedCourse(courseItem: Course) {
+        this.selectedCourse = courseItem;
     }
 
-    calculateClassGrade(classItem: Course): number {
+    calculateCourseGrade(courseItem: Course): number {
         let totalWeightedPoints = 0;
         let totalWeight = 0;
 
-        for (const category of classItem.categories) {
+        for (const category of courseItem.categories) {
             if (category.grades.length === 0) continue;
 
             const categoryTotal = category.grades.reduce((sum, grade) =>
@@ -190,25 +190,25 @@ class GradeStore {
     }
 
     updateGrade(categoryIndex: number, gradeIndex: number, field: keyof Grade, value: any) {
-        if (!this.selectedClass) return;
+        if (!this.selectedCourse) return;
 
-        const grade = this.selectedClass.categories[categoryIndex].grades[gradeIndex];
+        const grade = this.selectedCourse.categories[categoryIndex].grades[gradeIndex];
         (grade as any)[field] = value;
         this.save();
     }
 
     updateCategory(categoryIndex: number, field: keyof Category, value: any) {
-        if (!this.selectedClass) return;
+        if (!this.selectedCourse) return;
 
-        const category = this.selectedClass.categories[categoryIndex];
+        const category = this.selectedCourse.categories[categoryIndex];
         (category as any)[field] = value;
         this.save();
     }
 
     addGrade(categoryIndex: number) {
-        if (!this.selectedClass) return;
+        if (!this.selectedCourse) return;
 
-        this.selectedClass.categories[categoryIndex].grades.push({
+        this.selectedCourse.categories[categoryIndex].grades.push({
             source: 'New Assignment',
             pointsEarned: 0,
             pointsPossible: 100,
@@ -218,16 +218,16 @@ class GradeStore {
     }
 
     removeGrade(categoryIndex: number, gradeIndex: number) {
-        if (!this.selectedClass) return;
+        if (!this.selectedCourse) return;
 
-        this.selectedClass.categories[categoryIndex].grades.splice(gradeIndex, 1);
+        this.selectedCourse.categories[categoryIndex].grades.splice(gradeIndex, 1);
         this.save();
     }
 
     addCategory() {
-        if (!this.selectedClass) return;
+        if (!this.selectedCourse) return;
 
-        this.selectedClass.categories.push({
+        this.selectedCourse.categories.push({
             name: 'New Category',
             weight: 0.1,
             grades: []
