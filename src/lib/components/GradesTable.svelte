@@ -64,7 +64,7 @@
                     <td class="py-2 px-2"></td>
                     <td class="py-2 px-2 text-center">
                         <div class="flex items-center justify-center gap-1 text-sm">
-                            {"sum"}
+                            {formatPercentage(gradeStore.calculateCategorySum(category))}
                             /
                             <input
                                     class="grade-input w-12 text-center text-xs"
@@ -79,7 +79,7 @@
                         </div>
                     </td>
                     <td class="py-2 px-2 text-center text-sm">
-                        {"average"} %
+                        {formatPercentage(gradeStore.calculateCategoryAverage(category))} %
                     </td>
                 </tr>
 

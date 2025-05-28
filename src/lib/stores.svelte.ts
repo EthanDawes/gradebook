@@ -71,6 +71,42 @@ class GradeStore {
         return 'F';
     }
 
+    calculateCategorySum(category: Category): number {
+        if (category.grades.length === 0) return 0;
+        
+        const validGrades = category.grades.filter(grade => 
+            grade.pointsEarned !== undefined && grade.pointsPossible !== undefined && grade.pointsPossible > 0
+        );
+        
+        if (validGrades.length === 0) return 0;
+        
+        const weightPerAssignment = category.weight / category.grades.length;
+        let totalWeightEarned = 0;
+        
+        for (const grade of validGrades) {
+            const gradePercentage = grade.pointsEarned! / grade.pointsPossible!;
+            totalWeightEarned += gradePercentage * weightPerAssignment;
+        }
+        
+        return totalWeightEarned * 100;
+    }
+
+    calculateCategoryAverage(category: Category): number {
+        if (category.grades.length === 0) return 0;
+
+        const validGrades = category.grades.filter(grade => 
+            grade.pointsEarned !== undefined && grade.pointsPossible !== undefined && grade.pointsPossible > 0
+        );
+
+        if (validGrades.length === 0) return 0;
+
+        const total = validGrades.reduce((sum, grade) =>
+            sum + (grade.pointsEarned! / grade.pointsPossible!), 0
+        );
+
+        return (total / validGrades.length) * 100;
+    }
+
     updateGrade(categoryIndex: number, gradeIndex: number, field: keyof Grade, value: any) {
         if (!this.selectedCourse) return;
 
