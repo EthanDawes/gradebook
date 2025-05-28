@@ -322,6 +322,95 @@ class GradeStore {
     this.save();
   }
 
+  addSemester() {
+    const semesterName = prompt("Enter Semester Name (e.g., Spring 2025)");
+    if (!semesterName) return; // User cancelled
+
+    // Check if semester name already exists
+    if (this.storage.semesters.some((s) => s.name === semesterName)) {
+      alert("A semester with this name already exists.");
+      return;
+    }
+
+    // Generate suggested dates
+    const suggestedStart = new Date();
+    suggestedStart.setUTCDate(1);
+
+    const formatDate = (date: Date) => date.toISOString().split("T")[0];
+
+    // Prompt for start date
+    const startDateStr = prompt(
+      `Enter start date (YYYY-MM-DD)\nSuggested: ${formatDate(suggestedStart)}`,
+      formatDate(suggestedStart),
+    );
+    if (!startDateStr) return; // User cancelled
+
+    const startDate = new Date(startDateStr);
+    if (isNaN(startDate.getTime())) {
+      alert("Invalid start date format. Please use YYYY-MM-DD format.");
+      return;
+    }
+
+    // Calculate suggested end date based on start date
+    const calculatedEnd = new Date(startDate);
+    calculatedEnd.setMonth(calculatedEnd.getMonth() + 4);
+
+    // Prompt for end date
+    const endDateStr = prompt(
+      `Enter end date (YYYY-MM-DD)\nSuggested: ${formatDate(calculatedEnd)}`,
+      formatDate(calculatedEnd),
+    );
+    if (!endDateStr) return; // User cancelled
+
+    const endDate = new Date(endDateStr);
+    if (isNaN(endDate.getTime())) {
+      alert("Invalid end date format. Please use YYYY-MM-DD format.");
+      return;
+    }
+
+    if (endDate <= startDate) {
+      alert("End date must be after start date.");
+      return;
+    }
+
+    const newSemester: Semester = {
+      name: semesterName,
+      start: startDate.getTime(),
+      end: endDate.getTime(),
+      courses: [],
+    };
+
+    this.storage.semesters.push(newSemester);
+    this.currentSemester = newSemester;
+    this.selectedCourse = null;
+    this.save();
+  }
+
+  removeSemester(semester: Semester) {
+    if (this.storage.semesters.length <= 1) {
+      alert("Cannot delete the last semester");
+      return;
+    }
+
+    const confirmed = confirm(
+      `Are you sure you want to delete "${semester.name}"? This will permanently delete all courses and grades in this semester.`,
+    );
+    if (!confirmed) return;
+
+    const index = this.storage.semesters.indexOf(semester);
+    if (index === -1) return;
+
+    this.storage.semesters.splice(index, 1);
+
+    // If we deleted the current semester, switch to the first available one
+    if (this.currentSemester === semester) {
+      this.currentSemester = this.storage.semesters[0];
+      this.selectedCourse = null;
+    }
+
+    this.save();
+  }
+
   initializeCourseDefaults(course: Course) {
     // Set curve to grade scale's average if not already set
     if (!course.curve) {

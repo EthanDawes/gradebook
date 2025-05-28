@@ -10,14 +10,42 @@
 <div class="w-64 bg-white border-r border-gray-200 p-4">
     <!-- Semester Dropdown -->
     <div class="mb-6">
-        <select
-            class="w-full p-2 border border-gray-300 rounded-md text-sm"
-            bind:value={gradeStore.currentSemester}
-        >
-            {#each gradeStore.semesters as semester}
-                <option value={semester}>{semester.name}</option>
-            {/each}
-        </select>
+        <div class="flex gap-2">
+            <select
+                class="flex-1 p-2 border border-gray-300 rounded-md text-sm"
+                value={gradeStore.currentSemester.name}
+                onchange={(e) => {
+                    const target = e.target as HTMLSelectElement;
+                    if (target.value === "__add_new__") {
+                        gradeStore.addSemester();
+                        // Reset the dropdown to current semester after adding
+                        target.value = gradeStore.currentSemester.name;
+                    } else {
+                        const selectedSemester = gradeStore.semesters.find(
+                            (s) => s.name === target.value,
+                        );
+                        if (selectedSemester)
+                            gradeStore.setSemester(selectedSemester);
+                    }
+                }}
+            >
+                {#each gradeStore.semesters as semester}
+                    <option value={semester.name}>{semester.name}</option>
+                {/each}
+                <option disabled>──────────</option>
+                <option value="__add_new__">+ Add New Term</option>
+            </select>
+            {#if gradeStore.currentSemester.courses.length === 0}
+                <button
+                    class="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 rounded-md transition-colors"
+                    onclick={() =>
+                        gradeStore.removeSemester(gradeStore.currentSemester)}
+                    title="Delete semester"
+                >
+                    ✕
+                </button>
+            {/if}
+        </div>
     </div>
 
     <!-- Courses List -->
