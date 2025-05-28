@@ -1,0 +1,1 @@
+- `dummySemester.json` can be viewed in https://json-generator.com/

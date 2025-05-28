@@ -1,0 +1,41 @@
+{
+  name: '{{random("Spring", "Fall", "Summer")}} {{integer(2023, 2026)}}',
+  start: 1748379000408,
+  end: 1748379000408,
+  classes: [
+    '{{repeat(5, 6)}}',
+    {
+      name: '{{company()}} {{random("Math", "Biology", "CS", "History", "Physics")}}',
+      categories: function() {
+        var categoryNames = ["Homework", "Quizzes", "Exams", "Labs"];
+        return Array.from({ length: 3 }).map(function () {
+          return {
+            name: categoryNames[Math.floor(Math.random() * categoryNames.length)],
+            weight: +(Math.random() * 0.4 + 0.1).toFixed(2),
+            grades: Array.from({ length: Math.floor(Math.random() * 3) + 3 }).map(() => ({
+              source: ["https://purdue.brightspace.com/d2l/lms/grades/my_grades/main.d2l?ou=938134", "https://www.gradescope.com/courses/943168"][Math.floor(Math.random() * 2)],
+              due: Date.now(),
+              released: Date.now(),
+              pointsEarned: +(Math.random() * 100).toFixed(1),
+              pointsPossible: +(Math.random() * 50 + 50).toFixed(1),
+              classAverage: +(Math.random() * 0.45 + 0.5).toFixed(2)
+            }))
+          };
+        });
+      },
+      associations: [
+        '{{repeat(1, 2)}}',
+        '{{random("https://purdue.brightspace.com/d2l/lms/grades/my_grades/main.d2l?ou=938134", "https://www.gradescope.com/courses/943168")}}'
+      ],
+      gradeScale: '{{random("Standard", "Lenient", "Harsh")}}',
+      gradeCuttofs: {
+        A: 0.9,
+        B: 0.8,
+        C: 0.7,
+        D: 0.6,
+        F: 0
+      },
+      curve: '{{random("A", "B", "C")}}'
+    }
+  ]
+}
