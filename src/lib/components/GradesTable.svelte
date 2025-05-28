@@ -133,18 +133,6 @@
                         </td>
                     </tr>
                 {/each}
-
-                <!-- Empty category message -->
-                {#if category.grades.length === 0}
-                    <tr class="border-b border-gray-100">
-                        <td class="py-2 px-2 pl-6 text-gray-500 text-sm">
-                            - / {formatPercentage(category.weight * 100)}
-                        </td>
-                        <td class="py-2 px-2"></td>
-                        <td class="py-2 px-2 text-center text-gray-500">- / -</td>
-                        <td class="py-2 px-2 text-center text-gray-500">-%</td>
-                    </tr>
-                {/if}
             {/each}
             </tbody>
         </table>
