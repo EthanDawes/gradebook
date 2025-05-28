@@ -115,6 +115,13 @@ class GradeStore {
         });
         this.save();
     }
+
+    removeCategory(categoryIndex: number) {
+        if (!this.selectedCourse) return;
+
+        this.selectedCourse.categories.splice(categoryIndex, 1);
+        this.save();
+    }
 }
 
 export const gradeStore = new GradeStore();

@@ -52,6 +52,13 @@
                             >
                                 +
                             </button>
+                            <button
+                                    class="text-red-600 hover:text-red-800 text-lg font-bold"
+                                    onclick={() => gradeStore.removeCategory(categoryIndex)}
+                                    title="Remove this category"
+                            >
+                                ×
+                            </button>
                         </div>
                     </td>
                     <td class="py-2 px-2"></td>
