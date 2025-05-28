@@ -5,7 +5,7 @@ export const defaultStorage: Storage = { gradeScales: mockGradeScales, semesters
 
 export async function loadFromStorage(): Promise<Storage> {
   const stored = (await browser.storage.local.get("storage")).storage;
-  return stored || Promise.resolve(defaultStorage);
+  return stored ? JSON.parse(stored) : Promise.resolve(defaultStorage);
 }
 
 export function saveToStorage(data: Storage) {

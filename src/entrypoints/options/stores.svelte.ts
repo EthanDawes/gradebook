@@ -71,7 +71,7 @@ class GradeStore {
   private backupStorage = $state<Storage | null>(null);
   private cache = new CalculationCache();
 
-  currentSemester = $state<Semester | undefined>(this.storage.semesters.at(-1));
+  currentSemester = $derived(this.storage.semesters.at(-1));
   selectedCourse = $state<Course | null>(null);
   whatIfMode = $state<boolean>(false);
 
