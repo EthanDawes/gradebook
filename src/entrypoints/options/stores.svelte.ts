@@ -1,5 +1,5 @@
-import { loadFromStorage, saveToStorage } from "~/assets/storage.js";
-import type { Category, Course, Grade, Semester, Storage } from "../../assets/types.js";
+import { defaultStorage, loadFromStorage, saveToStorage } from "~/assets/storage.js";
+import type { Category, Course, Grade, Semester, Storage } from "~/assets/types.js";
 
 // Memoization cache for expensive calculations
 class CalculationCache {
@@ -67,13 +67,17 @@ class CalculationCache {
 }
 
 class GradeStore {
-  private storage = $state<Storage>(loadFromStorage());
+  private storage = $state(defaultStorage);
   private backupStorage = $state<Storage | null>(null);
   private cache = new CalculationCache();
 
   currentSemester = $state<Semester | undefined>(this.storage.semesters.at(-1));
   selectedCourse = $state<Course | null>(null);
   whatIfMode = $state<boolean>(false);
+
+  constructor() {
+    loadFromStorage().then(data => this.storage = data);
+  }
 
   get semesters() {
     return this.storage.semesters;

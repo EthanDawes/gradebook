@@ -1,15 +1,13 @@
-import { mockGradeScales } from "@/entrypoints/options/mocks";
+import { mockGradeScales } from "./mocks";
 import type { Storage } from "./types";
 
+export const defaultStorage: Storage = { gradeScales: mockGradeScales, semesters: [] };
 
-export function loadFromStorage(): Storage {
-  const stored = localStorage.getItem("grade-tracker-data");
-  if (stored) {
-    return JSON.parse(stored);
-  }
-
-  return { gradeScales: mockGradeScales, semesters: [] };
+export async function loadFromStorage(): Promise<Storage> {
+  const stored = (await browser.storage.local.get("storage")).storage;
+  return stored || Promise.resolve(defaultStorage);
 }
+
 export function saveToStorage(data: Storage) {
-  localStorage.setItem("grade-tracker-data", JSON.stringify(data));
+  browser.storage.local.set({"storage": JSON.stringify(data)});
 }
