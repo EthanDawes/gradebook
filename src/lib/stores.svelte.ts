@@ -80,7 +80,7 @@ class GradeStore {
         
         if (validGrades.length === 0) return 0;
         
-        const weightPerAssignment = category.weight / category.grades.length;
+        const weightPerAssignment = category.weight / validGrades.length;
         let totalWeightEarned = 0;
         
         for (const grade of validGrades) {

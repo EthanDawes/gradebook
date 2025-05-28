@@ -121,7 +121,8 @@
                         </td>
                         <td class="py-2 px-2 text-center">
                             {#if category.weight > 0 && grade.pointsPossible > 0}
-                                {@const itemWeight = category.weight / category.grades.length}
+                                {@const validGradesCount = category.grades.filter(g => g.pointsPossible > 0).length}
+                                {@const itemWeight = validGradesCount > 0 ? category.weight / validGradesCount : 0}
                                 {formatPercentage((grade.pointsEarned / grade.pointsPossible) * itemWeight * 100)} / {formatPercentage(itemWeight * 100)}
                             {:else}
                                 - / -
