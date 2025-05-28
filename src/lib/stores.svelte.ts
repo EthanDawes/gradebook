@@ -286,6 +286,42 @@ class GradeStore {
     this.save();
   }
 
+  addCourse() {
+    const defaultGradeScale = this.gradeScales[0];
+    const defaultCutoffs: Record<string, number> = {
+      "A+": 97,
+      A: 93,
+      "A-": 90,
+      "B+": 87,
+      B: 83,
+      "B-": 80,
+      "C+": 77,
+      C: 73,
+      "C-": 70,
+      "D+": 67,
+      D: 63,
+      "D-": 60,
+      F: 0,
+    };
+
+    const newCourse: Course = {
+      name: prompt("Enter Course Name") ?? "New Course",
+      categories: [],
+      associations: [],
+      gradeScale: defaultGradeScale.name,
+      gradeCutoffs: {},
+    };
+
+    // Set grade cutoffs based on the default grade scale
+    for (const grade of defaultGradeScale.scale) {
+      newCourse.gradeCutoffs[grade] = defaultCutoffs[grade] ?? 0;
+    }
+
+    this.currentSemester.courses.push(newCourse);
+    this.selectedCourse = newCourse;
+    this.save();
+  }
+
   initializeCourseDefaults(course: Course) {
     // Set curve to grade scale's average if not already set
     if (!course.curve) {
