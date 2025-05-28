@@ -5,7 +5,7 @@ body {
 }
 
 .grade-input {
-    @apply border border-gray-300 rounded px-2 py-1 text-sm w-full;
+    @apply border border-gray-300 rounded px-2 py-1 text-sm;
 }
 
 .grade-input:focus {
