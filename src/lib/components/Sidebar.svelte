@@ -13,7 +13,6 @@
         <select
                 class="w-full p-2 border border-gray-300 rounded-md text-sm"
                 bind:value={gradeStore.currentSemester}
-                onchange={(e) => gradeStore.setSemester(e.target.value)}
         >
             {#each gradeStore.semesters as semester}
                 <option value={semester}>{semester.name}</option>
