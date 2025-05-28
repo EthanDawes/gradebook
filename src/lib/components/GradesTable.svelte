@@ -61,6 +61,24 @@
             }
         }
     }
+
+    function calculateCurvedGrade(originalGrade: number, classAverage: number): number {
+        if (!courseItem.curve || classAverage === undefined) {
+            return originalGrade;
+        }
+        
+        const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
+        if (curveCutoff === undefined) {
+            return originalGrade;
+        }
+        
+        const curveAdjustment = curveCutoff - classAverage;
+        return originalGrade + curveAdjustment;
+    }
+
+    function shouldShowCurve(grade: any): boolean {
+        return !!(courseItem.curve && grade.classAverage !== undefined);
+    }
 </script>
 
 <div
@@ -126,7 +144,7 @@
                                         gradeStore.updateCategory(
                                             categoryIndex,
                                             "name",
-                                            e.target.value,
+                                            (e.target as HTMLInputElement).value,
                                         )}
                                 />
                                 <button
@@ -154,9 +172,19 @@
                             <div
                                 class="flex items-center justify-center gap-1 text-sm"
                             >
-                                {formatPercentage(
-                                    gradeStore.calculateCategorySum(category),
-                                )}
+                                {#if category.grades.some(g => shouldShowCurve(g))}
+                                    {@const uncurvedSum = gradeStore.calculateCategorySum(category)}
+                                    {@const validGrades = category.grades.filter(g => g.pointsPossible && g.pointsPossible > 0 && g.pointsEarned !== undefined)}
+                                    {@const weightPerAssignment = validGrades.length > 0 ? category.weight / validGrades.length : 0}
+                                    {@const curvedSum = validGrades.reduce((sum, grade) => {
+                                        const gradePercent = (grade.pointsEarned! / grade.pointsPossible!) * 100;
+                                        const curvedPercent = shouldShowCurve(grade) ? calculateCurvedGrade(gradePercent, grade.classAverage!) : gradePercent;
+                                        return sum + (curvedPercent / 100) * weightPerAssignment;
+                                    }, 0) * 100}
+                                    {formatPercentage(uncurvedSum)} → {formatPercentage(curvedSum)}
+                                {:else}
+                                    {formatPercentage(gradeStore.calculateCategorySum(category))}
+                                {/if}
                                 /
                                 <input
                                     class="grade-input w-12 text-center text-xs"
@@ -169,7 +197,7 @@
                                         gradeStore.updateCategory(
                                             categoryIndex,
                                             "weight",
-                                            (parseFloat(e.target.value) || 0) /
+                                            (parseFloat((e.target as HTMLInputElement).value) || 0) /
                                                 100,
                                         )}
                                 />
@@ -177,9 +205,19 @@
                             </div>
                         </td>
                         <td class="py-2 px-2 text-center text-sm">
-                            {formatPercentage(
-                                gradeStore.calculateCategoryAverage(category),
-                            )} %
+                            {#if category.grades.some(g => shouldShowCurve(g))}
+                                {@const uncurvedAverage = gradeStore.calculateCategoryAverage(category)}
+                                {@const validGrades = category.grades.filter(g => g.pointsPossible && g.pointsPossible > 0 && g.pointsEarned !== undefined)}
+                                {@const curvedTotal = validGrades.reduce((sum, grade) => {
+                                    const gradePercent = (grade.pointsEarned! / grade.pointsPossible!) * 100;
+                                    const curvedPercent = shouldShowCurve(grade) ? calculateCurvedGrade(gradePercent, grade.classAverage!) : gradePercent;
+                                    return sum + curvedPercent / 100;
+                                }, 0)}
+                                {@const curvedAverage = validGrades.length > 0 ? (curvedTotal / validGrades.length) * 100 : 0}
+                                {formatPercentage(uncurvedAverage)} → {formatPercentage(curvedAverage)} %
+                            {:else}
+                                {formatPercentage(gradeStore.calculateCategoryAverage(category))} %
+                            {/if}
                         </td>
                     </tr>
 
@@ -196,7 +234,7 @@
                                                 categoryIndex,
                                                 gradeIndex,
                                                 "source",
-                                                e.target.value,
+                                                (e.target as HTMLInputElement).value,
                                             )}
                                     />
                                     <button
@@ -225,7 +263,7 @@
                                                 categoryIndex,
                                                 gradeIndex,
                                                 "pointsEarned",
-                                                parseFloat(e.target.value) || 0,
+                                                parseFloat((e.target as HTMLInputElement).value) || 0,
                                             )}
                                     />
                                     <span>/</span>
@@ -238,7 +276,7 @@
                                                 categoryIndex,
                                                 gradeIndex,
                                                 "pointsPossible",
-                                                parseFloat(e.target.value) || 0,
+                                                parseFloat((e.target as HTMLInputElement).value) || 0,
                                             )}
                                     />
 
@@ -286,32 +324,37 @@
                                 </div>
                             </td>
                             <td class="py-2 px-2 text-center">
-                                {#if category.weight > 0 && grade.pointsPossible > 0}
+                                {#if category.weight > 0 && grade.pointsPossible && grade.pointsPossible > 0 && grade.pointsEarned !== undefined}
                                     {@const validGradesCount =
                                         category.grades.filter(
-                                            (g) => g.pointsPossible > 0,
+                                            (g) => g.pointsPossible && g.pointsPossible > 0,
                                         ).length}
                                     {@const itemWeight =
                                         validGradesCount > 0
                                             ? category.weight / validGradesCount
                                             : 0}
-                                    {formatPercentage(
-                                        (grade.pointsEarned /
-                                            grade.pointsPossible) *
-                                            itemWeight *
-                                            100,
-                                    )} / {formatPercentage(itemWeight * 100)}
+                                    {@const uncurvedWeight = (grade.pointsEarned / grade.pointsPossible) * itemWeight * 100}
+                                    {#if shouldShowCurve(grade)}
+                                        {@const userGradePercent = (grade.pointsEarned / grade.pointsPossible) * 100}
+                                        {@const curvedGradePercent = calculateCurvedGrade(userGradePercent, grade.classAverage!)}
+                                        {@const curvedWeight = (curvedGradePercent / 100) * itemWeight * 100}
+                                        {formatPercentage(uncurvedWeight)} → {formatPercentage(curvedWeight)} / {formatPercentage(itemWeight * 100)}
+                                    {:else}
+                                        {formatPercentage(uncurvedWeight)} / {formatPercentage(itemWeight * 100)}
+                                    {/if}
                                 {:else}
                                     - / -
                                 {/if}
                             </td>
                             <td class="py-2 px-2 text-center">
-                                {#if grade.pointsPossible > 0}
-                                    {formatPercentage(
-                                        (grade.pointsEarned /
-                                            grade.pointsPossible) *
-                                            100,
-                                    )}%
+                                {#if grade.pointsPossible && grade.pointsPossible > 0 && grade.pointsEarned !== undefined}
+                                    {@const uncurvedPercent = (grade.pointsEarned / grade.pointsPossible) * 100}
+                                    {#if shouldShowCurve(grade)}
+                                        {@const curvedPercent = calculateCurvedGrade(uncurvedPercent, grade.classAverage!)}
+                                        {formatPercentage(uncurvedPercent)}% → {formatPercentage(curvedPercent)}%
+                                    {:else}
+                                        {formatPercentage(uncurvedPercent)}%
+                                    {/if}
                                 {:else}
                                     -%
                                 {/if}
