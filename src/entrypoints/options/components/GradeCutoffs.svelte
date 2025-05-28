@@ -1,6 +1,6 @@
 <script lang="ts">
-    import type { Course } from '$lib/types.js';
-    import {gradeStore} from "$lib/stores.svelte";
+    import type { Course } from '~/assets/types.js';
+    import {gradeStore} from "../stores.svelte";
 
     interface Props {
         courseItem: Course;

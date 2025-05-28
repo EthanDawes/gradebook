@@ -1,12 +1,7 @@
-# Gradebook
+# WXT + Svelte
 
-- Consolidate grades from Brightspace and Gradescope
-- Estimate grades post-curve
-- Run hypotheticals
+This template should help get you started developing with Svelte in WXT.
 
-## Developing
+## Recommended IDE Setup
 
-```bash
-pnpm install
-pnpm dev
-```
+[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).

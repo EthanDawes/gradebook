@@ -1,18 +1,5 @@
-import type { Category, Course, Grade, Semester, Storage } from "./types.js";
-import { mockGradeScales } from "$lib/mocks";
-
-function loadFromStorage(): Storage {
-  const stored = localStorage.getItem("grade-tracker-data");
-  if (stored) {
-    return JSON.parse(stored);
-  }
-
-  return { gradeScales: mockGradeScales, semesters: [] };
-}
-
-function saveToStorage(data: Storage) {
-  localStorage.setItem("grade-tracker-data", JSON.stringify(data));
-}
+import { loadFromStorage, saveToStorage } from "~/assets/storage.js";
+import type { Category, Course, Grade, Semester, Storage } from "../../assets/types.js";
 
 // Memoization cache for expensive calculations
 class CalculationCache {

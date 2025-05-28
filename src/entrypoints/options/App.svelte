@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { gradeStore } from "$lib/stores.svelte.js";
-    import Sidebar from "$lib/components/Sidebar.svelte";
-    import CourseHeader from "$lib/components/CourseHeader.svelte";
-    import GradeCutoffs from "$lib/components/GradeCutoffs.svelte";
-    import GradesTable from "$lib/components/GradesTable.svelte";
-    import GradeStats from "$lib/components/GradeStats.svelte";
-    import EmptyState from "$lib/components/EmptyState.svelte";
+    import { gradeStore } from "./stores.svelte.js";
+    import Sidebar from "./components/Sidebar.svelte";
+    import CourseHeader from "./components/CourseHeader.svelte";
+    import GradeCutoffs from "./components/GradeCutoffs.svelte";
+    import GradesTable from "./components/GradesTable.svelte";
+    import GradeStats from "./components/GradeStats.svelte";
+    import EmptyState from "./components/EmptyState.svelte";
 </script>
 
 <div class="flex h-screen">

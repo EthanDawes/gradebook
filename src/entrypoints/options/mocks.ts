@@ -1,5 +1,5 @@
 // Mock data
-import type { GradeScale } from "$lib/types";
+import type { GradeScale } from "~/assets/types";
 
 export const mockGradeScales: GradeScale[] = [
   {
