@@ -16,8 +16,10 @@ function saveToStorage(data: Storage) {
 
 class GradeStore {
   private storage = $state<Storage>(loadFromStorage());
+  private backupStorage = $state<Storage | null>(null);
   currentSemester = $state<Semester>(this.storage.semesters[0]);
   selectedCourse = $state<Course | null>(null);
+  whatIfMode = $state<boolean>(false);
 
   get semesters() {
     return this.storage.semesters;
@@ -28,7 +30,48 @@ class GradeStore {
   }
 
   private save() {
-    saveToStorage(this.storage);
+    if (!this.whatIfMode) {
+      saveToStorage(this.storage);
+    }
+  }
+
+  enableWhatIfMode() {
+    if (!this.whatIfMode) {
+      // Create a deep copy of the current storage as backup
+      this.backupStorage = JSON.parse(JSON.stringify(this.storage));
+      this.whatIfMode = true;
+    }
+  }
+
+  disableWhatIfMode() {
+    if (this.whatIfMode && this.backupStorage) {
+      // Restore from backup
+      this.storage = this.backupStorage;
+      this.backupStorage = null;
+      this.whatIfMode = false;
+
+      // Update current references to point to restored data
+      this.currentSemester =
+        this.storage.semesters.find(
+          (s) => s.name === this.currentSemester.name,
+        ) || this.storage.semesters[0];
+
+      if (this.selectedCourse) {
+        // Find the restored version of the selected course
+        const restoredCourse = this.currentSemester.courses.find(
+          (c) => c.name === this.selectedCourse!.name,
+        );
+        this.selectedCourse = restoredCourse || null;
+      }
+    }
+  }
+
+  toggleWhatIfMode() {
+    if (this.whatIfMode) {
+      this.disableWhatIfMode();
+    } else {
+      this.enableWhatIfMode();
+    }
   }
 
   setSemester(semester: Semester) {

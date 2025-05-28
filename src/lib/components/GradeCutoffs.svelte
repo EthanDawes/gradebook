@@ -21,8 +21,15 @@
     let curveToB = $state(isCurveEnabled());
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
-    <h2 class="font-semibold mb-3">Cutoffs</h2>
+<div class="bg-white rounded-lg border border-gray-200 p-4 mb-6 {gradeStore.whatIfMode ? 'ring-2 ring-orange-300 bg-orange-50' : ''}">
+    <h2 class="font-semibold mb-3 flex items-center gap-2">
+        Cutoffs
+        {#if gradeStore.whatIfMode}
+            <span class="text-orange-600 bg-orange-100 px-2 py-1 rounded text-xs font-medium">
+                What If Mode Active
+            </span>
+        {/if}
+    </h2>
 
     <div class="mb-3">
         <label class="text-sm text-gray-600">

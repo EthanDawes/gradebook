@@ -7,18 +7,29 @@
     }
 
     let { courseItem }: Props = $props();
-    let whatIfMode = $state(false);
 
     function formatPercentage(num: number): string {
         return (Math.round(num * 100) / 100).toString();
     }
 </script>
 
-<div class="bg-white rounded-lg border border-gray-200 p-4">
+<div class="bg-white rounded-lg border border-gray-200 p-4 {gradeStore.whatIfMode ? 'ring-2 ring-orange-300 bg-orange-50' : ''}">
     <div class="flex items-center justify-between mb-4">
-        <h2 class="font-semibold text-lg">Grades</h2>
-        <label class="flex items-center text-sm">
-            <input type="checkbox" bind:checked={whatIfMode} class="mr-2">
+        <h2 class="font-semibold text-lg flex items-center gap-2">
+            Grades
+            {#if gradeStore.whatIfMode}
+                <span class="text-orange-600 bg-orange-100 px-2 py-1 rounded text-xs font-medium">
+                    What If Mode Active
+                </span>
+            {/if}
+        </h2>
+        <label class="flex items-center text-sm cursor-pointer {gradeStore.whatIfMode ? 'text-orange-700 font-medium' : ''}">
+            <input 
+                type="checkbox" 
+                checked={gradeStore.whatIfMode} 
+                onchange={() => gradeStore.toggleWhatIfMode()} 
+                class="mr-2 accent-orange-500"
+            >
             "What If" mode
         </label>
     </div>
