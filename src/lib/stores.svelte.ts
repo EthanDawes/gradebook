@@ -168,7 +168,18 @@ class GradeStore {
             grade.pointsPossible !== undefined &&
             grade.pointsPossible > 0
           ) {
-            return sum + grade.pointsEarned / grade.pointsPossible;
+            let gradePercentage = grade.pointsEarned / grade.pointsPossible;
+            
+            // Apply curve if both course curve and grade class average are set
+            if (courseItem.curve && courseItem.curve !== '' && grade.classAverage !== undefined) {
+              const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
+              if (curveCutoff !== undefined) {
+                const curveAdjustment = (curveCutoff - grade.classAverage) / 100;
+                gradePercentage = Math.min(1, gradePercentage + curveAdjustment);
+              }
+            }
+            
+            return sum + gradePercentage;
           }
           return sum;
         }, 0);

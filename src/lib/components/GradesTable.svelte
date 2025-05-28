@@ -77,7 +77,7 @@
     }
 
     function shouldShowCurve(grade: any): boolean {
-        return !!(courseItem.curve && grade.classAverage !== undefined);
+        return !!(courseItem.curve && courseItem.curve !== '' && grade.classAverage !== undefined);
     }
 </script>
 
