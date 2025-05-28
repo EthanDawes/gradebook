@@ -94,7 +94,6 @@ class GradeStore {
             source: 'New Assignment',
             pointsEarned: 0,
             pointsPossible: 100,
-            classAverage: 0.85
         });
         this.save();
     }

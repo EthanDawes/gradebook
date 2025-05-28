@@ -42,7 +42,7 @@
                         <div class="flex items-center gap-2">
                             <input
                                     class="font-medium text-base border-none outline-none bg-transparent"
-                                    bind:value={category.name}
+                                    value={category.name}
                                     oninput={(e) => gradeStore.updateCategory(categoryIndex, 'name', e.target.value)}
                             >
                             <button
@@ -60,11 +60,11 @@
                             <input
                                     class="grade-input w-12 text-center text-xs"
                                     type="number"
-                                    step="0.01"
+                                    step="1"
                                     min="0"
-                                    max="1"
-                                    bind:value={category.weight}
-                                    oninput={(e) => gradeStore.updateCategory(categoryIndex, 'weight', parseFloat(e.target.value) || 0)}
+                                    max="100"
+                                    value={category.weight * 100}
+                                    oninput={(e) => gradeStore.updateCategory(categoryIndex, 'weight', (parseFloat(e.target.value) || 0) / 100)}
                             >
                             <span class="text-xs">%</span>
                         </div>
@@ -78,25 +78,34 @@
                 {#each category.grades as grade, gradeIndex}
                     <tr class="border-b border-gray-100 hover:bg-gray-50">
                         <td class="py-2 px-2 pl-6">
-                            <input
-                                    class="grade-input"
-                                    bind:value={grade.source}
-                                    oninput={(e) => gradeStore.updateGrade(categoryIndex, gradeIndex, 'source', e.target.value)}
-                            >
+                            <div class="flex items-center gap-2">
+                                <input
+                                        class="grade-input"
+                                        value={grade.source}
+                                        oninput={(e) => gradeStore.updateGrade(categoryIndex, gradeIndex, 'source', e.target.value)}
+                                >
+                                <button
+                                        class="text-red-600 hover:text-red-800"
+                                        onclick={() => gradeStore.removeGrade(categoryIndex, gradeIndex)}
+                                        title="Remove grade"
+                                >
+                                    ×
+                                </button>
+                            </div>
                         </td>
                         <td class="py-2 px-2 text-center">
                             <div class="flex items-center justify-center gap-1">
                                 <input
                                         class="grade-input w-16 text-center"
                                         type="number"
-                                        bind:value={grade.pointsEarned}
+                                        value={grade.pointsEarned}
                                         oninput={(e) => gradeStore.updateGrade(categoryIndex, gradeIndex, 'pointsEarned', parseFloat(e.target.value) || 0)}
                                 >
                                 <span>/</span>
                                 <input
                                         class="grade-input w-16 text-center"
                                         type="number"
-                                        bind:value={grade.pointsPossible}
+                                        value={grade.pointsPossible}
                                         oninput={(e) => gradeStore.updateGrade(categoryIndex, gradeIndex, 'pointsPossible', parseFloat(e.target.value) || 0)}
                                 >
                             </div>
