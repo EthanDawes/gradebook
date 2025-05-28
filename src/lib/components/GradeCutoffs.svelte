@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Course } from '$lib/types.js';
+    import {gradeStore} from "$lib/stores.svelte";
 
     interface Props {
         courseItem: Course;
@@ -13,10 +14,14 @@
     <h2 class="font-semibold mb-3">Cutoffs</h2>
 
     <div class="mb-3">
-        <label class="text-sm text-gray-600">Scale:</label>
-        <select class="ml-2 p-1 border border-gray-300 rounded text-sm">
-            <option>{classItem.gradeScale}</option>
-        </select>
+        <label class="text-sm text-gray-600">
+            Scale:
+            <select class="ml-2 p-1 border border-gray-300 rounded text-sm">
+                {#each gradeStore.gradeScales as scale}
+                    <option selected={scale.name === courseItem.gradeScale}>{scale.name}</option>
+                {/each}
+            </select>
+        </label>
     </div>
 
     <div class="mb-3">
@@ -24,16 +29,16 @@
             <input type="checkbox" bind:checked={curveToB} class="mr-2">
             Increase the points of assignments with averages so that the average earns a
             <select class="mx-1 p-1 border border-gray-300 rounded text-sm">
-                <option>B</option>
+                {#each gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale)?.scale ?? [] as grade}
+                    <option selected={grade === courseItem.curve}>{grade}</option>
+                {/each}
             </select>
         </label>
     </div>
 
     <div class="flex gap-4 text-sm">
-        <div>A <input class="grade-input w-16" value="93" readonly> %</div>
-        <div>B <input class="grade-input w-16" value="83" readonly> %</div>
-        <div>C <input class="grade-input w-16" value="73" readonly> %</div>
-        <div>D <input class="grade-input w-16" value="63" readonly> %</div>
-        <div>F <input class="grade-input w-16" value="0" readonly> %</div>
+        {#each gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale)?.scale ?? [] as grade}
+            <div>{grade} <input class="grade-input w-16" value={courseItem.gradeCutoffs[grade]} readonly> %</div>
+        {/each}
     </div>
 </div>
