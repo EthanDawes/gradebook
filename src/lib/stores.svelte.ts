@@ -2,24 +2,16 @@ import type {Category, Course, Grade, Semester, Storage} from './types.js';
 import {mockGradeScales, mockSemesters} from "$lib/mocks";
 
 function loadFromStorage(): Storage {
-    try {
-        const stored = localStorage.getItem('grade-tracker-data');
-        if (stored) {
-            return JSON.parse(stored);
-        }
-    } catch (e) {
-        console.error('Failed to load from localStorage:', e);
+    const stored = localStorage.getItem('grade-tracker-data');
+    if (stored) {
+        return JSON.parse(stored);
     }
 
     return { gradeScales: mockGradeScales, semesters: mockSemesters };
 }
 
 function saveToStorage(data: Storage) {
-    try {
-        localStorage.setItem('grade-tracker-data', JSON.stringify(data));
-    } catch (e) {
-        console.error('Failed to save to localStorage:', e);
-    }
+    localStorage.setItem('grade-tracker-data', JSON.stringify(data));
 }
 
 class GradeStore {
