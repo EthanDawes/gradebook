@@ -7,7 +7,18 @@
     }
 
     let { courseItem }: Props = $props();
-    let curveToB = $state(!!courseItem.curve);
+    
+    // Initialize course defaults when component loads
+    gradeStore.initializeCourseDefaults(courseItem);
+    
+    // Check if curve is set and is a valid grade in the current scale
+    function isCurveEnabled(): boolean {
+        if (!courseItem.curve) return false;
+        const gradeScale = gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale);
+        return gradeScale?.scale.includes(courseItem.curve) ?? false;
+    }
+    
+    let curveToB = $state(isCurveEnabled());
 </script>
 
 <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6">
@@ -30,9 +41,9 @@
                 if (!(e.target as HTMLInputElement).checked) {
                     gradeStore.updateCourseCurve('');
                 } else {
-                    // Set to first available grade if no curve is set
-                    const availableGrades = gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale)?.scale ?? [];
-                    const defaultCurve = courseItem.curve || availableGrades[0] || '';
+                    // Set to grade scale's average as default
+                    const gradeScale = gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale);
+                    const defaultCurve = gradeScale?.average || '';
                     gradeStore.updateCourseCurve(defaultCurve);
                 }
             }}>
@@ -41,7 +52,9 @@
                     disabled={!curveToB}
                     onchange={(e) => gradeStore.updateCourseCurve((e.target as HTMLSelectElement).value)}>
                 {#each gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale)?.scale ?? [] as grade}
-                    <option value={grade} selected={grade === courseItem.curve}>{grade}</option>
+                    {@const gradeScale = gradeStore.gradeScales.find(scale => scale.name === courseItem.gradeScale)}
+                    {@const selectedGrade = courseItem.curve || gradeScale?.average || ''}
+                    <option value={grade} selected={grade === selectedGrade}>{grade}</option>
                 {/each}
             </select>
         </label>
