@@ -10,7 +10,7 @@
     let whatIfMode = $state(false);
 
     function formatPercentage(num: number): string {
-        return Math.round(num).toString();
+        return (Math.round(num * 100) / 100).toString();
     }
 </script>
 
@@ -31,7 +31,7 @@
                 <th class="text-left py-3 px-2 text-gray-700 font-medium">Grade Item</th>
                 <th class="text-center py-3 px-2 text-gray-700 font-medium">Points</th>
                 <th class="text-center py-3 px-2 text-gray-700 font-medium">Weight Achieved</th>
-                <th class="text-center py-3 px-2 text-gray-700 font-medium">Grade</th>
+                <th class="text-center py-3 px-2 text-gray-700 font-medium">Category Grade</th>
             </tr>
             </thead>
             <tbody>
@@ -64,6 +64,8 @@
                     <td class="py-2 px-2"></td>
                     <td class="py-2 px-2 text-center">
                         <div class="flex items-center justify-center gap-1 text-sm">
+                            {"sum"}
+                            /
                             <input
                                     class="grade-input w-12 text-center text-xs"
                                     type="number"
@@ -77,7 +79,7 @@
                         </div>
                     </td>
                     <td class="py-2 px-2 text-center text-sm">
-                        {formatPercentage(category.weight * 100)} %
+                        {"average"} %
                     </td>
                 </tr>
 
@@ -119,7 +121,8 @@
                         </td>
                         <td class="py-2 px-2 text-center">
                             {#if category.weight > 0 && grade.pointsPossible > 0}
-                                {formatPercentage((grade.pointsEarned / grade.pointsPossible) * category.weight * 100)} / {formatPercentage(category.weight * 100)}
+                                {@const itemWeight = category.weight / category.grades.length}
+                                {formatPercentage((grade.pointsEarned / grade.pointsPossible) * itemWeight * 100)} / {formatPercentage(itemWeight * 100)}
                             {:else}
                                 - / -
                             {/if}

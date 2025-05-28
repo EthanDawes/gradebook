@@ -92,8 +92,6 @@ class GradeStore {
 
         this.selectedCourse.categories[categoryIndex].grades.push({
             source: 'New Assignment',
-            pointsEarned: 0,
-            pointsPossible: 100,
         });
         this.save();
     }

@@ -35,8 +35,8 @@ export interface Grade {
     due?: number,
     // Date
     released?: number,
-    pointsEarned: number,
-    pointsPossible: number,
+    pointsEarned?: number,
+    pointsPossible?: number,
     // Decimal percentage
     classAverage?: number,
 }
