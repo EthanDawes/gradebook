@@ -47,10 +47,16 @@ class GradeStore {
         for (const category of courseItem.categories) {
             if (category.grades.length === 0) continue;
 
-            const categoryTotal = category.grades.reduce((sum, grade) =>
-                sum + (grade.pointsEarned / grade.pointsPossible), 0
+            const categoryTotal = category.grades.reduce((sum, grade) => {
+                if (grade.pointsEarned !== undefined && grade.pointsPossible !== undefined && grade.pointsPossible > 0) {
+                    return sum + (grade.pointsEarned / grade.pointsPossible);
+                }
+                return sum;
+            }, 0);
+            const validGrades = category.grades.filter(grade => 
+                grade.pointsEarned !== undefined && grade.pointsPossible !== undefined && grade.pointsPossible > 0
             );
-            const categoryAverage = categoryTotal / category.grades.length;
+            const categoryAverage = validGrades.length > 0 ? categoryTotal / validGrades.length : 0;
 
             totalWeightedPoints += categoryAverage * category.weight;
             totalWeight += category.weight;
@@ -154,6 +160,49 @@ class GradeStore {
         if (!this.selectedCourse) return;
 
         this.selectedCourse.categories.splice(categoryIndex, 1);
+        this.save();
+    }
+
+    updateCourseGradeScale(newGradeScale: string) {
+        if (!this.selectedCourse) return;
+
+        this.selectedCourse.gradeScale = newGradeScale;
+        
+        // Reset grade cutoffs when scale changes
+        const scale = this.gradeScales.find(s => s.name === newGradeScale);
+        if (scale) {
+            // Preserve existing cutoffs if they exist, otherwise use defaults
+            const existingCutoffs = { ...this.selectedCourse.gradeCutoffs };
+            this.selectedCourse.gradeCutoffs = {};
+            
+            // Set default cutoffs based on common grading scale
+            const defaultCutoffs: Record<string, number> = {
+                'A+': 97, 'A': 93, 'A-': 90,
+                'B+': 87, 'B': 83, 'B-': 80,
+                'C+': 77, 'C': 73, 'C-': 70,
+                'D+': 67, 'D': 63, 'D-': 60,
+                'F': 0
+            };
+            
+            for (const grade of scale.scale) {
+                this.selectedCourse.gradeCutoffs[grade] = existingCutoffs[grade] ?? defaultCutoffs[grade] ?? 0;
+            }
+        }
+        
+        this.save();
+    }
+
+    updateGradeCutoff(grade: string, cutoff: number) {
+        if (!this.selectedCourse) return;
+
+        this.selectedCourse.gradeCutoffs[grade] = cutoff;
+        this.save();
+    }
+
+    updateCourseCurve(curve: string) {
+        if (!this.selectedCourse) return;
+
+        this.selectedCourse.curve = curve;
         this.save();
     }
 }
