@@ -17,7 +17,7 @@ function saveToStorage(data: Storage) {
 class GradeStore {
   private storage = $state<Storage>(loadFromStorage());
   private backupStorage = $state<Storage | null>(null);
-  currentSemester = $state<Semester>(this.storage.semesters[0]);
+  currentSemester = $state<Semester | undefined>(this.storage.semesters.at(-1));
   selectedCourse = $state<Course | null>(null);
   whatIfMode = $state<boolean>(false);
 
