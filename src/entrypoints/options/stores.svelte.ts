@@ -68,15 +68,18 @@ class CalculationCache {
 
 class GradeStore {
   private storage = $state(defaultStorage);
-  private backupStorage = $state<Storage | null>(null);
+  private backupStorage = $state<Storage>();
   private cache = new CalculationCache();
 
-  currentSemester = $derived(this.storage.semesters.at(-1));
-  selectedCourse = $state<Course | null>(null);
+  currentSemester = $state<Semester>();
+  selectedCourse = $state<Course>();
   whatIfMode = $state<boolean>(false);
 
   constructor() {
-    loadFromStorage().then(data => this.storage = data);
+    loadFromStorage().then(data => {
+      this.storage = data;
+      this.currentSemester = this.storage.semesters.at(-1)
+    });
   }
 
   get semesters() {
@@ -113,7 +116,7 @@ class GradeStore {
     if (this.whatIfMode && this.backupStorage) {
       // Restore from backup
       this.storage = this.backupStorage;
-      this.backupStorage = null;
+      this.backupStorage = undefined;
       this.whatIfMode = false;
       this.invalidateCache();
 
@@ -128,7 +131,7 @@ class GradeStore {
         const restoredCourse = this.currentSemester?.courses.find(
           (c) => c.name === this.selectedCourse!.name,
         );
-        this.selectedCourse = restoredCourse || null;
+        this.selectedCourse = restoredCourse;
       }
     }
   }
@@ -143,7 +146,7 @@ class GradeStore {
 
   setSemester(semester: Semester) {
     this.currentSemester = semester;
-    this.selectedCourse = null;
+    this.selectedCourse = undefined;
   }
 
   setSelectedCourse(courseItem: Course) {
@@ -504,7 +507,7 @@ class GradeStore {
 
     this.storage.semesters.push(newSemester);
     this.currentSemester = newSemester;
-    this.selectedCourse = null;
+    this.selectedCourse = undefined;
     this.save();
   }
 
@@ -526,8 +529,8 @@ class GradeStore {
 
     // If we deleted the current semester, switch to the first available one
     if (this.currentSemester === semester) {
-      this.currentSemester = this.storage.semesters[0];
-      this.selectedCourse = null;
+      this.currentSemester = this.storage.semesters.at(-1);
+      this.selectedCourse = undefined;
     }
 
     this.invalidateCache();

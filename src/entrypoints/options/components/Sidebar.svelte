@@ -61,7 +61,7 @@
 
                 <button
                     class="w-full text-left p-3 rounded-lg border-2 transition-colors
-                       {gradeStore.selectedCourse === classItem
+                       {gradeStore.selectedCourse.name === classItem.name
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'}"
                     onclick={() => gradeStore.setSelectedCourse(classItem)}
