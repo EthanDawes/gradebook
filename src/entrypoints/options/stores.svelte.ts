@@ -204,11 +204,11 @@ class GradeStore {
             grade.pointsPossible > 0,
         );
 
-        const categoryAverage =
-          validGrades.length > 0 ? categoryTotal / validGrades.length : 0;
-
-        totalWeightedPoints += categoryAverage * category.weight;
-        totalWeight += category.weight;
+        if (validGrades.length > 0) {
+          const categoryAverage = categoryTotal / validGrades.length;
+          totalWeightedPoints += categoryAverage * category.weight;
+          totalWeight += category.weight;
+        }
       }
 
       return totalWeight > 0 ? (totalWeightedPoints / totalWeight) * 100 : 0;
