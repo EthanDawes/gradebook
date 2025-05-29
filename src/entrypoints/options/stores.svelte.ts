@@ -310,7 +310,7 @@ class GradeStore {
     if (!this.selectedCourse) return;
 
     this.selectedCourse.categories[categoryIndex].grades.push({
-      source: "New Assignment",
+      title: "New Assignment",
     });
 
     // Invalidate cache for this course since data changed
