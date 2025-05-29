@@ -1,5 +1,15 @@
-import { defaultStorage, loadFromStorage, saveToStorage } from "~/assets/storage.js";
-import type { Category, Course, Grade, Semester, Storage } from "~/assets/types.js";
+import {
+  defaultStorage,
+  loadFromStorage,
+  saveToStorage,
+} from "~/assets/storage.js";
+import type {
+  Category,
+  Course,
+  Grade,
+  Semester,
+  Storage,
+} from "~/assets/types.js";
 
 // Memoization cache for expensive calculations
 class CalculationCache {
@@ -71,23 +81,17 @@ class GradeStore {
   private backupStorage = $state<Storage>();
   private cache = new CalculationCache();
 
+  public readonly semesters = $derived(this.storage.semesters);
+  public readonly gradeScales = $derived(this.storage.gradeScales);
   currentSemester = $state<Semester>();
   selectedCourse = $state<Course>();
   whatIfMode = $state<boolean>(false);
 
   constructor() {
-    loadFromStorage().then(data => {
+    loadFromStorage().then((data) => {
       this.storage = data;
-      this.currentSemester = this.storage.semesters.at(-1)
+      this.currentSemester = this.storage.semesters.at(-1);
     });
-  }
-
-  get semesters() {
-    return this.storage.semesters;
-  }
-
-  get gradeScales() {
-    return this.storage.gradeScales;
   }
 
   private save() {
@@ -151,7 +155,7 @@ class GradeStore {
 
   setSelectedCourse(courseItem: Course) {
     // Avoid unnecessary updates if selecting the same course
-    if (this.selectedCourse === courseItem) return;
+    if (this.selectedCourse?.name === courseItem.name) return;
     this.selectedCourse = courseItem;
   }
 
@@ -442,8 +446,9 @@ class GradeStore {
       newCourse.gradeCutoffs[grade] = defaultCutoffs[grade] ?? 0;
     }
 
-    this.currentSemester?.courses.push(newCourse);
-    this.selectedCourse = newCourse;
+    this.currentSemester!.courses.push(newCourse);
+    // Must get from currentSemester instead of simply `newCourse` to ensure the reference is correct
+    this.selectedCourse = this.currentSemester!.courses.at(-1);
     this.save();
   }
 
@@ -506,7 +511,7 @@ class GradeStore {
     };
 
     this.storage.semesters.push(newSemester);
-    this.currentSemester = newSemester;
+    this.currentSemester = this.storage.semesters.at(-1);
     this.selectedCourse = undefined;
     this.save();
   }
@@ -522,13 +527,15 @@ class GradeStore {
     );
     if (!confirmed) return;
 
-    const index = this.storage.semesters.indexOf(semester);
+    const index = this.storage.semesters.findIndex(
+      (s) => s.name === semester.name,
+    );
     if (index === -1) return;
 
     this.storage.semesters.splice(index, 1);
 
     // If we deleted the current semester, switch to the first available one
-    if (this.currentSemester === semester) {
+    if (this.currentSemester?.name === semester.name) {
       this.currentSemester = this.storage.semesters.at(-1);
       this.selectedCourse = undefined;
     }

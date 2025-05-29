@@ -19,7 +19,7 @@
                         if (target.value === "__add_new__") {
                             gradeStore.addSemester();
                             // Reset the dropdown to current semester after adding
-                            target.value = gradeStore.currentSemester.name;
+                            target.value = gradeStore.currentSemester!.name;
                         } else {
                             const selectedSemester = gradeStore.semesters.find(
                                 (s) => s.name === target.value,
@@ -35,12 +35,12 @@
                     <option disabled>──────────</option>
                     <option value="__add_new__">+ Add New Term</option>
                 </select>
-                {#if gradeStore.currentSemester.courses.length === 0}
+                {#if gradeStore.currentSemester!.courses.length === 0}
                     <button
                         class="px-3 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 border border-red-300 rounded-md transition-colors"
                         onclick={() =>
                             gradeStore.removeSemester(
-                                gradeStore.currentSemester,
+                                gradeStore.currentSemester!,
                             )}
                         title="Delete semester"
                     >
@@ -61,7 +61,7 @@
 
                 <button
                     class="w-full text-left p-3 rounded-lg border-2 transition-colors
-                       {gradeStore.selectedCourse.name === classItem.name
+                       {gradeStore.selectedCourse?.name === classItem.name
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-gray-200 hover:border-gray-300'}"
                     onclick={() => gradeStore.setSelectedCourse(classItem)}
