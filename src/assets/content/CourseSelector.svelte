@@ -1,18 +1,22 @@
 <script lang="ts">
-  import { gradeStore } from "../stores.svelte";
+    import { gradeStore } from "../stores.svelte";
 
     function handleCourseChange(ev: Event) {
-        const courseIndex = Number.parseInt((ev.target as HTMLSelectElement).value)
+        const courseIndex = Number.parseInt(
+            (ev.target as HTMLSelectElement).value,
+        );
         gradeStore.removeCourseAssociation(location.href);
-        if (courseIndex > 0){
-            gradeStore.setSelectedCourse(gradeStore.currentSemester?.courses[courseIndex])
+        if (courseIndex > 0) {
+            gradeStore.setSelectedCourse(
+                gradeStore.currentSemester?.courses[courseIndex],
+            );
             gradeStore.addCourseAssociation(location.href);
         }
     }
 
     function createCourse() {
-        gradeStore.addCourse()
-        gradeStore.addCourseAssociation(location.href)
+        gradeStore.addCourse();
+        gradeStore.addCourseAssociation(location.href);
     }
 </script>
 
@@ -21,7 +25,10 @@
         <option value="-1">Track grades</option>
         <option disabled>──────────</option>
         {#each gradeStore.currentSemester.courses as course, idx}
-            <option selected={course.name === gradeStore.selectedCourse?.name} value={idx}>{course.name}</option>
+            <option
+                selected={course.name === gradeStore.selectedCourse?.name}
+                value={idx}>{course.name}</option
+            >
         {/each}
     </select>
 {:else}

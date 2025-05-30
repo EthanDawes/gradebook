@@ -419,7 +419,7 @@ class GradeStore {
   addCourseAssociation(url: string) {
     if (!this.selectedCourse) return;
 
-    this.selectedCourse.associations.push(url)
+    this.selectedCourse.associations.push(url);
     this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
@@ -427,14 +427,16 @@ class GradeStore {
   removeCourseAssociation(url: string) {
     if (!this.selectedCourse) return;
 
-    this.selectedCourse.associations.splice(this.selectedCourse.associations.indexOf(url), 1);
+    this.selectedCourse.associations.splice(
+      this.selectedCourse.associations.indexOf(url),
+      1,
+    );
     this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
   addCourse() {
-    if (!this.currentSemester && !this.addSemester())
-      return; // User canceled
+    if (!this.currentSemester && !this.addSemester()) return; // User canceled
 
     const defaultGradeScale = this.gradeScales[0];
     const defaultCutoffs: Record<string, number> = {
@@ -453,7 +455,7 @@ class GradeStore {
       F: 0,
     };
 
-    const name = prompt("Enter Course Name")
+    const name = prompt("Enter Course Name");
     if (!name) return;
     const newCourse: Course = {
       name,
