@@ -97,7 +97,7 @@ class GradeStore {
 
   private save() {
     if (!this.whatIfMode) {
-      saveToStorage(this.storage);
+      saveToStorage($state.snapshot(this.storage));
     }
   }
 

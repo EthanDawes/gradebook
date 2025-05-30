@@ -8,12 +8,12 @@ export const defaultStorage: Storage = {
 
 export async function loadFromStorage(): Promise<Storage> {
   const stored = (await browser.storage.local.get("storage")).storage;
-  return stored ? JSON.parse(stored) : Promise.resolve(defaultStorage);
+  return stored || Promise.resolve(defaultStorage);
 }
 
 window.loadFromStorage = loadFromStorage;
 
+// MUSTN'T be passed a proxy (will convert arrays to objects)
 export function saveToStorage(data: Storage) {
-  // Even though chrome storage can handle raw objects, it converts arrays to objects, no good.
-  browser.storage.local.set({ storage: JSON.stringify(data) });
+  browser.storage.local.set({ storage: data });
 }
