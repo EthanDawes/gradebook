@@ -1,10 +1,10 @@
-// entrypoints/example-ui.content/index.ts
-import { loadFromStorage } from '@/assets/storage';
 import CourseSelector from '@/assets/content/CourseSelector.svelte';
-import { mount, unmount } from 'svelte';
+import { mount, SvelteComponent, unmount } from 'svelte';
 import { Course } from '@/assets/types';
 import "@/assets/content/inject.css"
 import { gradeStore } from '@/assets/stores.svelte';
+import CategorySelector from '@/assets/content/CategorySelector.svelte';
+import AverageSelector from '@/assets/content/AverageSelector.svelte';
 
 export default defineContentScript({
   matches: ['https://www.gradescope.com/courses/*'],
@@ -22,15 +22,16 @@ export default defineContentScript({
 
     console.log(location.pathname, currentCourse, currentSemester)
 
-    async function mountUi(anchorSelector: string) {
+    async function mountUi<T extends Record<string, any>>(anchorSelector: ContentScriptAnchoredOptions["anchor"], component: typeof SvelteComponent<T>, props = {} as T) {
       const ui = createIntegratedUi(ctx, {
         position: 'inline',
         anchor: anchorSelector,
         tag: "span",
         onMount: (container) => {
           // Create the Svelte app inside the UI container
-          mount(CourseSelector, {
+          mount(component, {
             target: container,
+            props,
           });
         },
         onRemove: (app) => {
@@ -42,6 +43,13 @@ export default defineContentScript({
       return ui;
     }
 
-    mountUi(".courseHeader--courseID")
+    mountUi(".courseHeader--courseID", CourseSelector)
+    for (const anchor of document.getElementsByClassName("table--primaryLink")) {
+      mountUi(anchor, CategorySelector)
+    }
+
+    for (const anchor of document.getElementsByClassName("submissionStatus--score")) {
+      mountUi(anchor, AverageSelector)
+    }
   },
 });

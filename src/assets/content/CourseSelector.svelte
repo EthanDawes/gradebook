@@ -1,12 +1,14 @@
 <script lang="ts">
   import { gradeStore } from "../stores.svelte";
+  import { Course } from "../types";
 
     function handleCourseChange(ev: Event) {
         const courseIndex = Number.parseInt((ev.target as HTMLSelectElement).value)
         gradeStore.removeCourseAssociation(location.href);
-        if (courseIndex === -1) return;
-        gradeStore.setSelectedCourse(gradeStore.currentSemester?.courses[courseIndex])
-        gradeStore.addCourseAssociation(location.href);
+        if (courseIndex > 0){
+            gradeStore.setSelectedCourse(gradeStore.currentSemester?.courses[courseIndex])
+            gradeStore.addCourseAssociation(location.href);
+        }
     }
 
     function createCourse() {
