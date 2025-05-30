@@ -11,7 +11,7 @@
                 gradeStore.currentSemester?.courses[courseIndex],
             );
             gradeStore.addCourseAssociation(location.href);
-        }
+        } else location.reload();
     }
 
     function createCourse() {
@@ -34,5 +34,7 @@
         {/if}
     </select>
 {:else}
-    <button onclick={createCourse}>Track grades</button>
+    <button onclick={createCourse} style="border: 1px solid rgb(118, 118, 118);"
+        >🆕 Track grades</button
+    >
 {/if}
