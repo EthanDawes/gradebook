@@ -2,9 +2,13 @@
     import { gradeStore } from "../stores.svelte";
 
     function handleCourseChange(ev: Event) {
-        const courseIndex = Number.parseInt(
-            (ev.target as HTMLSelectElement).value,
-        );
+        const selectedVal = (ev.target as HTMLSelectElement).value;
+        if (selectedVal === "_new") {
+            gradeStore.addCourse();
+            gradeStore.addCourseAssociation(location.href);
+            return;
+        }
+        const courseIndex = Number.parseInt(selectedVal);
         gradeStore.removeCourseAssociation(location.href);
         if (courseIndex > -1) {
             gradeStore.setSelectedCourse(
@@ -29,6 +33,7 @@
                 value={idx}>{course.name}</option
             >
         {/each}
+        <option value="_new">+ New course</option>
         {#if gradeStore.selectedCourse}
             <option value="-1">- Stop tracking</option>
         {/if}
