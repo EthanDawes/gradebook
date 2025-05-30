@@ -34,7 +34,5 @@
         {/if}
     </select>
 {:else}
-    <button onclick={createCourse} style="border: 1px solid rgb(118, 118, 118);"
-        >🆕 Track grades</button
-    >
+    <button onclick={createCourse} class="reset">🆕 Track grades</button>
 {/if}
