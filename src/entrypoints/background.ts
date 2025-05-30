@@ -1,8 +1,8 @@
 export default defineBackground(() => {
-  browser.action.onClicked.addListener(function () {
-    browser.tabs.create({
-      url: browser.runtime.getURL("/options.html"),
-      selected: true,
-    });
+  browser.action.onClicked.addListener(() => browser.runtime.openOptionsPage());
+  browser.runtime.onMessage.addListener((msg) => {
+    if (msg.action === "openOptionsPage") {
+      browser.runtime.openOptionsPage();
+    }
   });
 });

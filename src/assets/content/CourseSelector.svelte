@@ -36,3 +36,7 @@
 {:else}
     <button onclick={createCourse} class="reset">🆕 Track grades</button>
 {/if}
+<button
+    onclick={() => browser.runtime.sendMessage({ action: "openOptionsPage" })}
+    style="text-decoration: none;">↗️</button
+>
