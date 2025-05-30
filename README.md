@@ -2,10 +2,11 @@
 
 Browser extension to stay on top of your grades.
 
-Download on the Chrome Web Store!
+Download on the Chrome Web Store
+and Firefox Addon store!
 
 ## Features
-- Consolidate grades from Brightspace and Gradescope
+- Consolidate grades from Brightspace, Gradescope, or enter manually
 - Track your current grade
   - What percentage of my final grade is one homework worth?
   - How well am I doing in the quizzes category?
@@ -22,7 +23,15 @@ pnpm install
 pnpm dev
 ```
 
-## Issues
-Does not save if current term not selected. This can happen when
-- Creating the first course in a term (doesn't show up)
-- Creating a new course (opens, but doesn't select)
+## Attribution
+- Graphics Title: 1f4af.svg
+  - Graphics Author: Copyright 2020 Twitter, Inc and other contributors (https://github.com/twitter/twemoji)
+  - Graphics Source: https://github.com/twitter/twemoji/blob/master/assets/svg/1f4af.svg
+  - Graphics License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+- Graphics Title: 1f4d6.svg
+  - Graphics Author: Copyright 2020 Twitter, Inc and other contributors (https://github.com/twitter/twemoji)
+  - Graphics Source: https://github.com/twitter/twemoji/blob/master/assets/svg/1f4d6.svg
+  - Graphics License: CC-BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
+- Bell Curve icon
+  - Author: [Muhammad_Usman](https://www.freepik.com/author/muhammad-usman/icons) on
+  [freepik](https://www.freepik.com/icon/bell-curve_7665216)
