@@ -16,6 +16,10 @@ and Firefox Addon store!
   - What grade do I need on the final to get a B?
   - How will my grade be affected if I get 90% on all future homeworks?
 
+![options page](docs/options.png)
+![gradescope integration](docs/gradescope.png)
+![brightspace integration](docs/brightspace.png)
+
 ## Developing
 
 ```bash
