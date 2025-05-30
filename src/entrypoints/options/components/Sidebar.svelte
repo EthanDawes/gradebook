@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { gradeStore } from "../stores.svelte.js";
+    import { gradeStore } from "~/assets/stores.svelte.js";
 
     function formatPercentage(num: number): string {
         return Math.round(num).toString();

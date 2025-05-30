@@ -7,6 +7,9 @@ export default defineConfig({
   modules: ['@wxt-dev/module-svelte'],
   manifest: {
     permissions: ['storage'],
+    action: {
+      default_title: "View Grades"
+    },
   },
   vite: () => ({
     plugins: [tailwindcss()],

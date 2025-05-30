@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { gradeStore } from "../stores.svelte.js";
+    import { gradeStore } from "~/assets/stores.svelte.js";
     import type { Course } from "~/assets/types.js";
 
     interface Props {

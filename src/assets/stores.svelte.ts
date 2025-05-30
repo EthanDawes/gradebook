@@ -83,12 +83,13 @@ class GradeStore {
 
   public readonly semesters = $derived(this.storage.semesters);
   public readonly gradeScales = $derived(this.storage.gradeScales);
+  public readonly ready: Promise<void>;
   currentSemester = $state<Semester>();
   selectedCourse = $state<Course>();
   whatIfMode = $state<boolean>(false);
 
   constructor() {
-    loadFromStorage().then((data) => {
+    this.ready = loadFromStorage().then((data) => {
       this.storage = data;
       this.currentSemester = this.storage.semesters.at(-1);
     });
@@ -148,14 +149,14 @@ class GradeStore {
     }
   }
 
-  setSemester(semester: Semester) {
+  setSemester(semester: Semester | undefined) {
     this.currentSemester = semester;
     this.selectedCourse = undefined;
   }
 
-  setSelectedCourse(courseItem: Course) {
+  setSelectedCourse(courseItem: Course | undefined) {
     // Avoid unnecessary updates if selecting the same course
-    if (this.selectedCourse?.name === courseItem.name) return;
+    if (this.selectedCourse?.name === courseItem?.name) return;
     this.selectedCourse = courseItem;
   }
 
@@ -415,7 +416,26 @@ class GradeStore {
     this.save();
   }
 
+  addCourseAssociation(url: string) {
+    if (!this.selectedCourse) return;
+
+    this.selectedCourse.associations.push(url)
+    this.invalidateCourseCache(this.selectedCourse);
+    this.save();
+  }
+
+  removeCourseAssociation(url: string) {
+    if (!this.selectedCourse) return;
+
+    this.selectedCourse.associations.splice(this.selectedCourse.associations.indexOf(url), 1);
+    this.invalidateCourseCache(this.selectedCourse);
+    this.save();
+  }
+
   addCourse() {
+    if (!this.currentSemester && !this.addSemester())
+      return; // User canceled
+
     const defaultGradeScale = this.gradeScales[0];
     const defaultCutoffs: Record<string, number> = {
       "A+": 97,
@@ -433,8 +453,10 @@ class GradeStore {
       F: 0,
     };
 
+    const name = prompt("Enter Course Name")
+    if (!name) return;
     const newCourse: Course = {
-      name: prompt("Enter Course Name") ?? "New Course",
+      name,
       categories: [],
       associations: [],
       gradeScale: defaultGradeScale.name,
@@ -454,12 +476,12 @@ class GradeStore {
 
   addSemester() {
     const semesterName = prompt("Enter Semester Name (e.g., Spring 2025)");
-    if (!semesterName) return; // User cancelled
+    if (!semesterName) return false; // User cancelled
 
     // Check if semester name already exists
     if (this.storage.semesters.some((s) => s.name === semesterName)) {
       alert("A semester with this name already exists.");
-      return;
+      return false;
     }
 
     // Generate suggested dates
@@ -473,12 +495,12 @@ class GradeStore {
       `Enter start date (YYYY-MM-DD)\nSuggested: ${formatDate(suggestedStart)}`,
       formatDate(suggestedStart),
     );
-    if (!startDateStr) return; // User cancelled
+    if (!startDateStr) return false; // User cancelled
 
     const startDate = new Date(startDateStr);
     if (isNaN(startDate.getTime())) {
       alert("Invalid start date format. Please use YYYY-MM-DD format.");
-      return;
+      return false;
     }
 
     // Calculate suggested end date based on start date
@@ -490,17 +512,17 @@ class GradeStore {
       `Enter end date (YYYY-MM-DD)\nSuggested: ${formatDate(calculatedEnd)}`,
       formatDate(calculatedEnd),
     );
-    if (!endDateStr) return; // User cancelled
+    if (!endDateStr) return false; // User cancelled
 
     const endDate = new Date(endDateStr);
     if (isNaN(endDate.getTime())) {
       alert("Invalid end date format. Please use YYYY-MM-DD format.");
-      return;
+      return false;
     }
 
     if (endDate <= startDate) {
       alert("End date must be after start date.");
-      return;
+      return false;
     }
 
     const newSemester: Semester = {
@@ -514,6 +536,7 @@ class GradeStore {
     this.currentSemester = this.storage.semesters.at(-1);
     this.selectedCourse = undefined;
     this.save();
+    return true;
   }
 
   removeSemester(semester: Semester) {

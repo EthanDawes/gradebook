@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { gradeStore } from "./stores.svelte.js";
+    import { gradeStore } from "~/assets/stores.svelte.js";
     import Sidebar from "./components/Sidebar.svelte";
     import CourseHeader from "./components/CourseHeader.svelte";
     import GradeCutoffs from "./components/GradeCutoffs.svelte";
