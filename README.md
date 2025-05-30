@@ -2,8 +2,8 @@
 
 Browser extension to stay on top of your grades.
 
-Download on the Chrome Web Store
-and Firefox Addon store!
+Download on the [Chrome Web Store](https://chromewebstore.google.com/detail/mlipmbmigplkjkladdggbikhfcibcdbm)
+and [Firefox Addon store](https://addons.mozilla.org/en-US/firefox/addon/gradebook/)!
 
 ## Features
 - Consolidate grades from Brightspace, Gradescope, or enter manually
