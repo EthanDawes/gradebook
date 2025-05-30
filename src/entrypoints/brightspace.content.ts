@@ -36,6 +36,7 @@ export default defineContentScript({
         anchor: anchorSelector,
         tag: "span",
         onMount: (container) => {
+          container.style.position = "relative";
           // Create the Svelte app inside the UI container
           mount(component, {
             target: container,
@@ -55,14 +56,14 @@ export default defineContentScript({
     for (const row of document.querySelectorAll("tbody tr")) {
       const titleElem = row.querySelector(".table--primaryLink") as HTMLElement;
       const title = titleElem.innerText;
-      const scoreElem = row.querySelector(
-        ".submissionStatus--score",
-      ) as HTMLElement;
+      const scoreElem = row.querySelector(".submissionStatus--score") as
+        | HTMLElement
+        | undefined;
       mountUi(titleElem, CategorySelector, {
         title,
-        score: scoreElem.innerText,
+        score: scoreElem?.innerText,
       });
-      mountUi(scoreElem, AverageSelector, { title });
+      if (scoreElem) mountUi(scoreElem, AverageSelector, { title });
     }
   },
 });

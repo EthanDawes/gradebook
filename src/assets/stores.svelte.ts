@@ -307,12 +307,15 @@ class GradeStore {
     this.save();
   }
 
-  addGrade(categoryIndex: number) {
+  addGrade(
+    categoryIndex: number,
+    grade: Grade = {
+      title: "New Assignment",
+    },
+  ) {
     if (!this.selectedCourse) return;
 
-    this.selectedCourse.categories[categoryIndex].grades.push({
-      title: "New Assignment",
-    });
+    this.selectedCourse.categories[categoryIndex].grades.push(grade);
 
     // Invalidate cache for this course since data changed
     this.invalidateCourseCache(this.selectedCourse);
@@ -329,11 +332,11 @@ class GradeStore {
     this.save();
   }
 
-  addCategory() {
-    if (!this.selectedCourse) return;
+  addCategory(name?: string) {
+    if (!this.selectedCourse || !name) return;
 
     this.selectedCourse.categories.push({
-      name: "New Category",
+      name,
       weight: 0.1,
       grades: [],
     });

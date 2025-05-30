@@ -6,7 +6,7 @@
             (ev.target as HTMLSelectElement).value,
         );
         gradeStore.removeCourseAssociation(location.href);
-        if (courseIndex > 0) {
+        if (courseIndex > -1) {
             gradeStore.setSelectedCourse(
                 gradeStore.currentSemester?.courses[courseIndex],
             );
@@ -22,8 +22,7 @@
 
 {#if gradeStore.currentSemester?.courses.length}
     <select onchange={handleCourseChange}>
-        <option value="-1">Track grades</option>
-        <option disabled>──────────</option>
+        <option disabled value="-1" selected>Track grades</option>
         {#each gradeStore.currentSemester.courses as course, idx}
             <option
                 selected={course.name === gradeStore.selectedCourse?.name}

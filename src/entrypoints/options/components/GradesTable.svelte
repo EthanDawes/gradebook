@@ -503,7 +503,7 @@
     <div class="mt-4">
         <button
             class="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            onclick={() => gradeStore.addCategory()}
+            onclick={() => gradeStore.addCategory("New Category")}
         >
             + Add Category
         </button>
