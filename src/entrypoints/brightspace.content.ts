@@ -4,7 +4,6 @@ import { Course } from "@/assets/types";
 import "@/assets/content/inject.css";
 import { gradeStore } from "@/assets/stores.svelte";
 import CategorySelector from "@/assets/content/CategorySelector.svelte";
-import AverageSelector from "@/assets/content/AverageSelector.svelte";
 
 export default defineContentScript({
   matches: ["https://www.gradescope.com/courses/*"],
@@ -63,7 +62,6 @@ export default defineContentScript({
         title,
         score: scoreElem?.innerText,
       });
-      if (scoreElem) mountUi(scoreElem, AverageSelector, { title });
     }
   },
 });

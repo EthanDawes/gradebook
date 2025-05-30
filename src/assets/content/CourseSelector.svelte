@@ -22,13 +22,16 @@
 
 {#if gradeStore.currentSemester?.courses.length}
     <select onchange={handleCourseChange}>
-        <option disabled value="-1" selected>Track grades</option>
+        <option disabled selected>Track grades</option>
         {#each gradeStore.currentSemester.courses as course, idx}
             <option
                 selected={course.name === gradeStore.selectedCourse?.name}
                 value={idx}>{course.name}</option
             >
         {/each}
+        {#if gradeStore.selectedCourse}
+            <option value="-1">- Stop tracking</option>
+        {/if}
     </select>
 {:else}
     <button onclick={createCourse}>Track grades</button>
