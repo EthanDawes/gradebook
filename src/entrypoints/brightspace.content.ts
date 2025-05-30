@@ -44,12 +44,12 @@ export default defineContentScript({
     }
 
     mountUi(".courseHeader--courseID", CourseSelector)
-    for (const anchor of document.getElementsByClassName("table--primaryLink")) {
-      mountUi(anchor, CategorySelector)
-    }
-
-    for (const anchor of document.getElementsByClassName("submissionStatus--score")) {
-      mountUi(anchor, AverageSelector)
+    for (const row of document.querySelectorAll("tbody tr")) {
+      const titleElem = row.querySelector(".table--primaryLink") as HTMLElement
+      const title = titleElem.innerText
+      const scoreElem = row.querySelector(".submissionStatus--score") as HTMLElement
+      mountUi(titleElem, CategorySelector, {title, score: scoreElem.innerText})
+      mountUi(scoreElem, AverageSelector, {title})
     }
   },
 });

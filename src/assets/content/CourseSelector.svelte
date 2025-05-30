@@ -1,6 +1,5 @@
 <script lang="ts">
   import { gradeStore } from "../stores.svelte";
-  import { Course } from "../types";
 
     function handleCourseChange(ev: Event) {
         const courseIndex = Number.parseInt((ev.target as HTMLSelectElement).value)
