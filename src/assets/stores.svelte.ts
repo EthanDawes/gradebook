@@ -149,6 +149,33 @@ class GradeStore {
     }
   }
 
+  isGradeInputDisabled(
+    courseName: string,
+    categoryIndex: number,
+    gradeIndex: number,
+  ): boolean {
+    if (!this.whatIfMode || !this.backupStorage) {
+      return false;
+    }
+
+    // Find the original grade in backup storage
+    const backupSemester = this.backupStorage.semesters.find(
+      (s) => s.name === this.currentSemester?.name,
+    );
+    const backupCourse = backupSemester?.courses.find(
+      (c) => c.name === courseName,
+    );
+    const originalGrade =
+      backupCourse?.categories[categoryIndex]?.grades[gradeIndex];
+
+    // Disable if the grade had values in the original data
+    return !!(
+      originalGrade &&
+      originalGrade.pointsEarned &&
+      originalGrade.pointsPossible
+    );
+  }
+
   setSemester(semester: Semester | undefined) {
     this.currentSemester = semester;
     this.selectedCourse = undefined;

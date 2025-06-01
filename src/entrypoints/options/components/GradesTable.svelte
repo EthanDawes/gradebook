@@ -87,12 +87,23 @@
         );
     }
 
-    function updateReleased(categoryIndex: number, gradeIndex: number): void {
+    function updateReleased(categoryIndex: number, gradeIndex: number) {
         gradeStore.updateGrade(
             categoryIndex,
             gradeIndex,
             "released",
-            new Date().getTime(),
+            Date.now(),
+        );
+    }
+
+    function isGradeInputDisabled(
+        categoryIndex: number,
+        gradeIndex: number,
+    ): boolean {
+        return gradeStore.isGradeInputDisabled(
+            courseItem.name,
+            categoryIndex,
+            gradeIndex,
         );
     }
 </script>
@@ -339,9 +350,18 @@
                                     class="flex items-center justify-center gap-1 group relative"
                                 >
                                     <input
-                                        class="grade-input w-16 text-center"
+                                        class="grade-input w-16 text-center {isGradeInputDisabled(
+                                            categoryIndex,
+                                            gradeIndex,
+                                        )
+                                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                                            : ''}"
                                         type="number"
                                         value={grade.pointsEarned}
+                                        disabled={isGradeInputDisabled(
+                                            categoryIndex,
+                                            gradeIndex,
+                                        )}
                                         oninput={(e) => {
                                             updateReleased(
                                                 categoryIndex,
@@ -361,9 +381,18 @@
                                     />
                                     <span>/</span>
                                     <input
-                                        class="grade-input w-16 text-center"
+                                        class="grade-input w-16 text-center {isGradeInputDisabled(
+                                            categoryIndex,
+                                            gradeIndex,
+                                        )
+                                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
+                                            : ''}"
                                         type="number"
                                         value={grade.pointsPossible}
+                                        disabled={isGradeInputDisabled(
+                                            categoryIndex,
+                                            gradeIndex,
+                                        )}
                                         oninput={(e) => {
                                             updateReleased(
                                                 categoryIndex,
