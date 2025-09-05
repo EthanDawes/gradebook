@@ -477,7 +477,7 @@
                                         {:else}
                                             <!-- Bell curve button (hidden by default, shown on hover) -->
                                             <button
-                                                class="opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-gray-100 rounded p-1"
+                                                class="opacity-0 group-hover:opacity-100 hover:bg-gray-100 focus:opacity-100 focus:bg-gray-100 transition-opacity duration-200 rounded p-1"
                                                 onclick={() =>
                                                     handleClassAverageSet(
                                                         categoryIndex,
