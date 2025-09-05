@@ -17,6 +17,12 @@
         ]?.grades.findIndex((grade) => grade.title === title) ?? -1,
     );
 
+    // Yes, I only want to capture the initial value
+    if (currentCategoryIdx !== -1 && currentGradeIdx !== -1) {
+        gradeStore.updateGrade(currentCategoryIdx, currentGradeIdx, "pointsEarned", pointsEarned);
+        gradeStore.updateGrade(currentCategoryIdx, currentGradeIdx, "pointsPossible", pointsPossible);
+    }
+
     function handleChange(ev: Event) {
         const selectedValue = (ev.target as HTMLSelectElement).value;
         let newCategoryIndex = Number.parseInt(selectedValue);

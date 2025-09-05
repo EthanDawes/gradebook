@@ -306,17 +306,17 @@ class GradeStore {
     });
   }
 
-  updateGrade(
+  updateGrade<T extends keyof Grade>(
     categoryIndex: number,
     gradeIndex: number,
-    field: keyof Grade,
-    value: any,
+    field: T,
+    value: Grade[T],
   ) {
     if (!this.selectedCourse) return;
 
     const grade =
       this.selectedCourse.categories[categoryIndex].grades[gradeIndex];
-    (grade as any)[field] = value;
+    grade[field] = value;
 
     // Invalidate cache for this course since data changed
     this.invalidateCourseCache(this.selectedCourse);
