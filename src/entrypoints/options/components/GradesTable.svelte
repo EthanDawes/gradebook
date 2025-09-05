@@ -1,12 +1,17 @@
 <script lang="ts">
     import { gradeStore } from "~/assets/stores.svelte.js";
     import type { Course } from "~/assets/types.js";
+    import { tick } from "svelte";
 
     interface Props {
         courseItem: Course;
     }
 
     let { courseItem }: Props = $props();
+
+    // References to input elements for auto-selection
+    let categoryInputs: HTMLInputElement[] = [];
+    let gradeInputRefs: { [key: string]: HTMLInputElement } = {};
 
     function formatPercentage(num: number): string {
         return (Math.round(num * 100) / 100).toString();
@@ -106,6 +111,36 @@
             gradeIndex,
         );
     }
+
+    // Auto-select functions
+    async function addCategoryAndSelect(name: string) {
+        const initialCategoryCount = courseItem.categories.length;
+        gradeStore.addCategory(name);
+
+        await tick(); // Wait for DOM to update
+
+        // Focus and select the newly added category input
+        const newCategoryIndex = courseItem.categories.length - 1;
+        if (categoryInputs[newCategoryIndex]) {
+            categoryInputs[newCategoryIndex].focus();
+            categoryInputs[newCategoryIndex].select();
+        }
+    }
+
+    async function addGradeAndSelect(categoryIndex: number) {
+        gradeStore.addGrade(categoryIndex);
+
+        await tick(); // Wait for DOM to update
+
+        // Focus and select the newly added grade input
+        const newGradeIndex =
+            courseItem.categories[categoryIndex].grades.length - 1;
+        const gradeKey = `${categoryIndex}-${newGradeIndex}`;
+        if (gradeInputRefs[gradeKey]) {
+            gradeInputRefs[gradeKey].focus();
+            gradeInputRefs[gradeKey].select();
+        }
+    }
 </script>
 
 <div
@@ -165,6 +200,7 @@
                         <td class="py-2 px-2">
                             <div class="flex items-center gap-2">
                                 <input
+                                    bind:this={categoryInputs[categoryIndex]}
                                     class="font-medium text-base border-none outline-none bg-transparent"
                                     value={category.name}
                                     oninput={(e) =>
@@ -178,7 +214,7 @@
                                 <button
                                     class="text-blue-600 hover:text-blue-800 text-lg font-bold"
                                     onclick={() =>
-                                        gradeStore.addGrade(categoryIndex)}
+                                        addGradeAndSelect(categoryIndex)}
                                     title="Add grade to this category"
                                 >
                                     +
@@ -321,6 +357,11 @@
                             <td class="py-2 px-2 pl-6">
                                 <div class="flex items-center gap-2">
                                     <input
+                                        bind:this={
+                                            gradeInputRefs[
+                                                `${categoryIndex}-${gradeIndex}`
+                                            ]
+                                        }
                                         class="grade-input"
                                         value={grade.title}
                                         oninput={(e) =>
@@ -532,7 +573,7 @@
     <div class="mt-4">
         <button
             class="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            onclick={() => gradeStore.addCategory("New Category")}
+            onclick={() => addCategoryAndSelect("New Category")}
         >
             + Add Category
         </button>
