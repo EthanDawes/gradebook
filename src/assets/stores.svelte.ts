@@ -430,9 +430,6 @@ class GradeStore {
     if (!this.selectedCourse) return;
 
     this.selectedCourse.gradeCutoffs[grade] = cutoff;
-
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -440,9 +437,6 @@ class GradeStore {
     if (!this.selectedCourse) return;
 
     this.selectedCourse.curve = curve || undefined;
-
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
