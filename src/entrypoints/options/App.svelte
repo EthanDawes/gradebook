@@ -16,8 +16,7 @@
         {#if gradeStore.selectedCourse}
             {@const courseItem = gradeStore.selectedCourse}
             {@const currentGrade = gradeStore.calculateCourseGrade(
-                courseItem,
-                courseItem.curve, // Hack to recalculate if curve changes
+                courseItem
             )}
 
             <CourseHeader {courseItem} {currentGrade} />
