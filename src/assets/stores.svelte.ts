@@ -11,75 +11,9 @@ import type {
   Storage,
 } from "~/assets/types.js";
 
-// Memoization cache for expensive calculations
-class CalculationCache {
-  private courseGradeCache = new Map<
-    string,
-    { data: string; result: number }
-  >();
-  private categoryCache = new Map<string, { data: string; result: number }>();
-
-  private getCourseKey(course: Course): string {
-    return `${course.name}-${JSON.stringify(course.categories)}`;
-  }
-
-  private getCategoryKey(category: Category, type: "sum" | "average"): string {
-    return `${category.name}-${type}-${JSON.stringify(category.grades)}-${category.weight}`;
-  }
-
-  getCourseGrade(course: Course, calculator: () => number): number {
-    const key = this.getCourseKey(course);
-    const cached = this.courseGradeCache.get(key);
-
-    if (cached && cached.data === key) {
-      return cached.result;
-    }
-
-    const result = calculator();
-    this.courseGradeCache.set(key, { data: key, result });
-    return result;
-  }
-
-  getCategoryCalculation(
-    category: Category,
-    type: "sum" | "average",
-    calculator: () => number,
-  ): number {
-    const key = this.getCategoryKey(category, type);
-    const cached = this.categoryCache.get(key);
-
-    if (cached && cached.data === key) {
-      return cached.result;
-    }
-
-    const result = calculator();
-    this.categoryCache.set(key, { data: key, result });
-    return result;
-  }
-
-  clear() {
-    this.courseGradeCache.clear();
-    this.categoryCache.clear();
-  }
-
-  clearCourse(course: Course) {
-    const key = this.getCourseKey(course);
-    this.courseGradeCache.delete(key);
-
-    // Clear category caches for this course
-    for (const category of course.categories) {
-      const sumKey = this.getCategoryKey(category, "sum");
-      const avgKey = this.getCategoryKey(category, "average");
-      this.categoryCache.delete(sumKey);
-      this.categoryCache.delete(avgKey);
-    }
-  }
-}
-
 class GradeStore {
   private storage = $state(defaultStorage);
   private backupStorage = $state<Storage>();
-  private cache = new CalculationCache();
 
   public readonly semesters = $derived(this.storage.semesters);
   public readonly gradeScales = $derived(this.storage.gradeScales);
@@ -101,14 +35,6 @@ class GradeStore {
     }
   }
 
-  private invalidateCache() {
-    this.cache.clear();
-  }
-
-  private invalidateCourseCache(course: Course) {
-    this.cache.clearCourse(course);
-  }
-
   enableWhatIfMode() {
     if (!this.whatIfMode) {
       // Create a deep copy of the current storage as backup
@@ -123,7 +49,6 @@ class GradeStore {
       this.storage = this.backupStorage;
       this.backupStorage = undefined;
       this.whatIfMode = false;
-      this.invalidateCache();
 
       // Update current references to point to restored data
       this.currentSemester =
@@ -188,59 +113,53 @@ class GradeStore {
   }
 
   calculateCourseGrade(courseItem: Course): number {
-    return this.cache.getCourseGrade(courseItem, () => {
-      let totalWeightedPoints = 0;
-      let totalWeight = 0;
+    let totalWeightedPoints = 0;
+    let totalWeight = 0;
 
-      for (const category of courseItem.categories) {
-        if (category.grades.length === 0) continue;
+    for (const category of courseItem.categories) {
+      if (category.grades.length === 0) continue;
 
-        const categoryTotal = category.grades.reduce((sum, grade) => {
+      const categoryTotal = category.grades.reduce((sum, grade) => {
+        if (
+          grade.pointsEarned !== undefined &&
+          grade.pointsPossible !== undefined &&
+          grade.pointsPossible > 0
+        ) {
+          let gradePercentage = grade.pointsEarned / grade.pointsPossible;
+
+          // Apply curve if both course curve and grade class average are set
           if (
-            grade.pointsEarned !== undefined &&
-            grade.pointsPossible !== undefined &&
-            grade.pointsPossible > 0
+            courseItem.curve &&
+            courseItem.curve !== "" &&
+            grade.classAverage !== undefined
           ) {
-            let gradePercentage = grade.pointsEarned / grade.pointsPossible;
-
-            // Apply curve if both course curve and grade class average are set
-            if (
-              courseItem.curve &&
-              courseItem.curve !== "" &&
-              grade.classAverage !== undefined
-            ) {
-              const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
-              if (curveCutoff !== undefined) {
-                const curveAdjustment =
-                  (curveCutoff - grade.classAverage) / 100;
-                gradePercentage = Math.min(
-                  1,
-                  gradePercentage + curveAdjustment,
-                );
-              }
+            const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
+            if (curveCutoff !== undefined) {
+              const curveAdjustment = (curveCutoff - grade.classAverage) / 100;
+              gradePercentage = Math.min(1, gradePercentage + curveAdjustment);
             }
-
-            return sum + gradePercentage;
           }
-          return sum;
-        }, 0);
 
-        const validGrades = category.grades.filter(
-          (grade) =>
-            grade.pointsEarned !== undefined &&
-            grade.pointsPossible !== undefined &&
-            grade.pointsPossible > 0,
-        );
-
-        if (validGrades.length > 0) {
-          const categoryAverage = categoryTotal / validGrades.length;
-          totalWeightedPoints += categoryAverage * category.weight;
-          totalWeight += category.weight;
+          return sum + gradePercentage;
         }
-      }
+        return sum;
+      }, 0);
 
-      return totalWeight > 0 ? (totalWeightedPoints / totalWeight) * 100 : 0;
-    });
+      const validGrades = category.grades.filter(
+        (grade) =>
+          grade.pointsEarned !== undefined &&
+          grade.pointsPossible !== undefined &&
+          grade.pointsPossible > 0,
+      );
+
+      if (validGrades.length > 0) {
+        const categoryAverage = categoryTotal / validGrades.length;
+        totalWeightedPoints += categoryAverage * category.weight;
+        totalWeight += category.weight;
+      }
+    }
+
+    return totalWeight > 0 ? (totalWeightedPoints / totalWeight) * 100 : 0;
   }
 
   getLetterGrade(
@@ -260,50 +179,46 @@ class GradeStore {
   }
 
   calculateCategorySum(category: Category): number {
-    return this.cache.getCategoryCalculation(category, "sum", () => {
-      if (category.grades.length === 0) return 0;
+    if (category.grades.length === 0) return 0;
 
-      const validGrades = category.grades.filter(
-        (grade) =>
-          grade.pointsEarned !== undefined &&
-          grade.pointsPossible !== undefined &&
-          grade.pointsPossible > 0,
-      );
+    const validGrades = category.grades.filter(
+      (grade) =>
+        grade.pointsEarned !== undefined &&
+        grade.pointsPossible !== undefined &&
+        grade.pointsPossible > 0,
+    );
 
-      if (validGrades.length === 0) return 0;
+    if (validGrades.length === 0) return 0;
 
-      const weightPerAssignment = category.weight / validGrades.length;
-      let totalWeightEarned = 0;
+    const weightPerAssignment = category.weight / validGrades.length;
+    let totalWeightEarned = 0;
 
-      for (const grade of validGrades) {
-        const gradePercentage = grade.pointsEarned! / grade.pointsPossible!;
-        totalWeightEarned += gradePercentage * weightPerAssignment;
-      }
+    for (const grade of validGrades) {
+      const gradePercentage = grade.pointsEarned! / grade.pointsPossible!;
+      totalWeightEarned += gradePercentage * weightPerAssignment;
+    }
 
-      return totalWeightEarned * 100;
-    });
+    return totalWeightEarned * 100;
   }
 
   calculateCategoryAverage(category: Category): number {
-    return this.cache.getCategoryCalculation(category, "average", () => {
-      if (category.grades.length === 0) return 0;
+    if (category.grades.length === 0) return 0;
 
-      const validGrades = category.grades.filter(
-        (grade) =>
-          grade.pointsEarned !== undefined &&
-          grade.pointsPossible !== undefined &&
-          grade.pointsPossible > 0,
-      );
+    const validGrades = category.grades.filter(
+      (grade) =>
+        grade.pointsEarned !== undefined &&
+        grade.pointsPossible !== undefined &&
+        grade.pointsPossible > 0,
+    );
 
-      if (validGrades.length === 0) return 0;
+    if (validGrades.length === 0) return 0;
 
-      const total = validGrades.reduce(
-        (sum, grade) => sum + grade.pointsEarned! / grade.pointsPossible!,
-        0,
-      );
+    const total = validGrades.reduce(
+      (sum, grade) => sum + grade.pointsEarned! / grade.pointsPossible!,
+      0,
+    );
 
-      return (total / validGrades.length) * 100;
-    });
+    return (total / validGrades.length) * 100;
   }
 
   updateGrade<T extends keyof Grade>(
@@ -318,8 +233,6 @@ class GradeStore {
       this.selectedCourse.categories[categoryIndex].grades[gradeIndex];
     grade[field] = value;
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -329,8 +242,6 @@ class GradeStore {
     const category = this.selectedCourse.categories[categoryIndex];
     (category as any)[field] = value;
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -344,8 +255,6 @@ class GradeStore {
 
     this.selectedCourse.categories[categoryIndex].grades.push(grade);
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -354,8 +263,6 @@ class GradeStore {
 
     this.selectedCourse.categories[categoryIndex].grades.splice(gradeIndex, 1);
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -368,8 +275,6 @@ class GradeStore {
       grades: [],
     });
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -378,8 +283,6 @@ class GradeStore {
 
     this.selectedCourse.categories.splice(categoryIndex, 1);
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -421,8 +324,6 @@ class GradeStore {
       this.selectedCourse.curve = undefined;
     }
 
-    // Invalidate cache for this course since data changed
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -444,7 +345,6 @@ class GradeStore {
     if (!this.selectedCourse) return;
 
     this.selectedCourse.associations.push(url);
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -455,7 +355,6 @@ class GradeStore {
       this.selectedCourse.associations.indexOf(url),
       1,
     );
-    this.invalidateCourseCache(this.selectedCourse);
     this.save();
   }
 
@@ -589,7 +488,6 @@ class GradeStore {
       this.selectedCourse = undefined;
     }
 
-    this.invalidateCache();
     this.save();
   }
 
