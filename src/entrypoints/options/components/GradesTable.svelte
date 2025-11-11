@@ -231,7 +231,9 @@
                                 </button>
                             </div>
                         </td>
-                        <td class="py-2 px-2"></td>
+                        <td class="py-2 px-2 text-center">
+                            Total: {gradeStore.calculateRawPoints(category)}
+                        </td>
                         <td class="py-2 px-2 text-center">
                             <div
                                 class="flex items-center justify-center gap-1 text-sm"

@@ -178,6 +178,15 @@ class GradeStore {
     return "F";
   }
 
+  calculateRawPoints(category: Category): number {
+    if (category.grades.length === 0) return 0;
+
+    return category.grades.reduce(
+      (sum, grade) => sum + (grade.pointsEarned || 0),
+      0,
+    );
+  }
+
   calculateCategorySum(category: Category): number {
     if (category.grades.length === 0) return 0;
 
