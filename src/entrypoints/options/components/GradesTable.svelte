@@ -141,6 +141,12 @@
             gradeInputRefs[gradeKey].select();
         }
     }
+
+    function parseInput(target: HTMLInputElement) {
+        return target.value.length === 0
+            ? undefined
+            : parseFloat(target.value) || 0;
+    }
 </script>
 
 <div
@@ -416,11 +422,7 @@
                                                 categoryIndex,
                                                 gradeIndex,
                                                 "pointsEarned",
-                                                parseFloat(
-                                                    (
-                                                        e.target as HTMLInputElement
-                                                    ).value,
-                                                ) || 0,
+                                                parseInput(e.target),
                                             );
                                         }}
                                     />
@@ -447,11 +449,7 @@
                                                 categoryIndex,
                                                 gradeIndex,
                                                 "pointsPossible",
-                                                parseFloat(
-                                                    (
-                                                        e.target as HTMLInputElement
-                                                    ).value,
-                                                ) || 0,
+                                                parseInput(e.target),
                                             );
                                         }}
                                     />
