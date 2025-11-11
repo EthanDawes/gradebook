@@ -233,6 +233,8 @@
                         </td>
                         <td class="py-2 px-2 text-center">
                             Total: {gradeStore.calculateRawPoints(category)}
+                            /
+                            {gradeStore.calculateRawPointsPossible(category)}
                         </td>
                         <td class="py-2 px-2 text-center">
                             <div

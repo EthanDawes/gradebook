@@ -187,6 +187,15 @@ class GradeStore {
     );
   }
 
+  calculateRawPointsPossible(category: Category): number {
+    if (category.grades.length === 0) return 0;
+
+    return category.grades.reduce(
+      (sum, grade) => sum + (grade.pointsPossible || 0),
+      0,
+    );
+  }
+
   calculateCategorySum(category: Category): number {
     if (category.grades.length === 0) return 0;
 
@@ -211,23 +220,11 @@ class GradeStore {
   }
 
   calculateCategoryAverage(category: Category): number {
-    if (category.grades.length === 0) return 0;
-
-    const validGrades = category.grades.filter(
-      (grade) =>
-        grade.pointsEarned !== undefined &&
-        grade.pointsPossible !== undefined &&
-        grade.pointsPossible > 0,
+    return (
+      (gradeStore.calculateRawPoints(category) /
+        gradeStore.calculateRawPointsPossible(category)) *
+      100
     );
-
-    if (validGrades.length === 0) return 0;
-
-    const total = validGrades.reduce(
-      (sum, grade) => sum + grade.pointsEarned! / grade.pointsPossible!,
-      0,
-    );
-
-    return (total / validGrades.length) * 100;
   }
 
   updateGrade<T extends keyof Grade>(
