@@ -191,7 +191,10 @@ class GradeStore {
     if (category.grades.length === 0) return 0;
 
     return category.grades.reduce(
-      (sum, grade) => sum + (grade.pointsPossible || 0),
+      (sum, grade) =>
+        // Only include points possible if has points earned
+        sum +
+        (grade.pointsEarned !== undefined ? grade.pointsPossible || 0 : 0),
       0,
     );
   }
