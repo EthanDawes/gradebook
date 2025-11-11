@@ -288,7 +288,7 @@
                                 {/if}
                                 /
                                 <input
-                                    class="grade-input w-12 text-center text-xs"
+                                    class="grade-input w-14 text-center text-xs"
                                     type="number"
                                     step="1"
                                     min="0"
