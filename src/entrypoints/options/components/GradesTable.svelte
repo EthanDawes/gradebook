@@ -505,7 +505,10 @@
                                         ).length}
                                     {@const itemWeight =
                                         validGradesCount > 0
-                                            ? category.weight / validGradesCount
+                                            ? grade.pointsPossible /
+                                              gradeStore.calculateRawPointsPossibleEver(
+                                                  category,
+                                              )
                                             : 0}
                                     {@const uncurvedWeight =
                                         (grade.pointsEarned /

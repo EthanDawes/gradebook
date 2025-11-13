@@ -199,6 +199,17 @@ class GradeStore {
     );
   }
 
+  calculateRawPointsPossibleEver(category: Category): number {
+    if (category.grades.length === 0) return 0;
+
+    return category.grades.reduce(
+      (sum, grade) =>
+        // Contrary to `calculateRawPointsPossible`, this includes assignments with no recorded earned score
+        sum + (grade.pointsPossible || 0),
+      0,
+    );
+  }
+
   calculateCategorySum(category: Category): number {
     if (category.grades.length === 0) return 0;
 
