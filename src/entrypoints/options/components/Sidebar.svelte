@@ -1,9 +1,6 @@
 <script lang="ts">
     import { gradeStore } from "~/assets/stores.svelte.js";
-
-    function formatPercentage(num: number): string {
-        return Math.round(num).toString();
-    }
+    import { formatPercentage } from "~/assets";
 </script>
 
 <div class="w-64 bg-white border-r border-gray-200 p-4">

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { gradeStore } from "~/assets/stores.svelte.js";
     import type { Course } from "~/assets/types.js";
+    import { formatPercentage2 as formatPercentage } from "~/assets";
     import { tick } from "svelte";
 
     interface Props {
@@ -12,10 +13,6 @@
     // References to input elements for auto-selection
     let categoryInputs: HTMLInputElement[] = [];
     let gradeInputRefs: { [key: string]: HTMLInputElement } = {};
-
-    function formatPercentage(num: number): string {
-        return (Math.round(num * 100) / 100).toString();
-    }
 
     function handleClassAverageEdit(
         categoryIndex: number,
@@ -498,6 +495,7 @@
                                 </div>
                             </td>
                             <td class="py-2 px-2 text-center">
+                                <!-- Weight achieved column -->
                                 {#if category.weight > 0 && grade.pointsPossible && grade.pointsPossible > 0 && grade.pointsEarned !== undefined}
                                     {@const validGradesCount =
                                         category.grades.filter(
@@ -538,11 +536,20 @@
                                             itemWeight * 100,
                                         )}
                                     {/if}
+                                {:else if category.weight > 0 && !!grade.pointsEarned}
+                                    {formatPercentage(
+                                        (grade.pointsEarned /
+                                            gradeStore.calculateRawPointsPossible(
+                                                category,
+                                            )) *
+                                            100,
+                                    )} / -
                                 {:else}
                                     - / -
                                 {/if}
                             </td>
                             <td class="py-2 px-2 text-center">
+                                <!-- Percent column -->
                                 {#if grade.pointsPossible && grade.pointsPossible > 0 && grade.pointsEarned !== undefined}
                                     {@const uncurvedPercent =
                                         (grade.pointsEarned /
