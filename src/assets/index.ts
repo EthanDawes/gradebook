@@ -3,5 +3,5 @@ export function formatPercentage2(num: number) {
 }
 
 export function formatPercentage(num: number): string {
-  return Math.round(num).toString();
+  return Math.floor(num).toString();
 }

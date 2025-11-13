@@ -10,40 +10,8 @@
 
     let { courseItem, currentGrade }: Props = $props();
 
-    function calculateUncurvedGrade(): number {
-        let totalWeightedPoints = 0;
-        let totalWeight = 0;
-
-        for (const category of courseItem.categories) {
-            if (category.grades.length === 0) continue;
-
-            const categoryTotal = category.grades.reduce((sum, grade) => {
-                if (
-                    grade.pointsEarned !== undefined &&
-                    grade.pointsPossible !== undefined &&
-                    grade.pointsPossible > 0
-                ) {
-                    return sum + grade.pointsEarned / grade.pointsPossible;
-                }
-                return sum;
-            }, 0);
-
-            const validGrades = category.grades.filter(
-                (grade) =>
-                    grade.pointsEarned !== undefined &&
-                    grade.pointsPossible !== undefined &&
-                    grade.pointsPossible > 0,
-            );
-
-            const categoryAverage =
-                validGrades.length > 0 ? categoryTotal / validGrades.length : 0;
-
-            totalWeightedPoints += categoryAverage * category.weight;
-            totalWeight += category.weight;
-        }
-
-        return totalWeight > 0 ? (totalWeightedPoints / totalWeight) * 100 : 0;
-    }
+    const calculateUncurvedGrade = () =>
+        gradeStore.calculateCourseGrade(courseItem, false);
 
     function hasCurve(): boolean {
         if (!courseItem.curve) return false;

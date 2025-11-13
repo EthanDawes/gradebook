@@ -112,14 +112,15 @@ class GradeStore {
     this.selectedCourse = courseItem;
   }
 
-  calculateCourseGrade(courseItem: Course): number {
+  calculateCourseGrade(courseItem: Course, curve = true): number {
     let totalWeightedPoints = 0;
     let totalWeight = 0;
 
     for (const category of courseItem.categories) {
       if (category.grades.length === 0) continue;
 
-      const categoryTotal = category.grades.reduce((sum, grade) => {
+      // TODO: reimplement curves
+      /*const categoryTotal = category.grades.reduce((sum, grade) => {
         if (
           grade.pointsEarned !== undefined &&
           grade.pointsPossible !== undefined &&
@@ -143,7 +144,10 @@ class GradeStore {
           return sum + gradePercentage;
         }
         return sum;
-      }, 0);
+        }, 0);*/
+
+      const categoryTotal = gradeStore.calculateRawPoints(category);
+      const categoryAvailable = gradeStore.calculateRawPointsPossible(category);
 
       const validGrades = category.grades.filter(
         (grade) =>
@@ -153,7 +157,7 @@ class GradeStore {
       );
 
       if (validGrades.length > 0) {
-        const categoryAverage = categoryTotal / validGrades.length;
+        const categoryAverage = categoryTotal / categoryAvailable;
         totalWeightedPoints += categoryAverage * category.weight;
         totalWeight += category.weight;
       }
