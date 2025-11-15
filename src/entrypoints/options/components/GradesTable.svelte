@@ -505,10 +505,11 @@
                                         ).length}
                                     {@const itemWeight =
                                         validGradesCount > 0
-                                            ? grade.pointsPossible /
-                                              gradeStore.calculateRawPointsPossibleEver(
-                                                  category,
-                                              )
+                                            ? (grade.pointsPossible /
+                                                  gradeStore.calculateRawPointsPossibleEver(
+                                                      category,
+                                                  )) *
+                                              category.weight
                                             : 0}
                                     {@const uncurvedWeight =
                                         (grade.pointsEarned /
@@ -540,11 +541,13 @@
                                         )}
                                     {/if}
                                 {:else if category.weight > 0 && !!grade.pointsEarned}
+                                    <!-- Extra credit -->
                                     {formatPercentage(
                                         (grade.pointsEarned /
                                             gradeStore.calculateRawPointsPossible(
                                                 category,
                                             )) *
+                                            category.weight *
                                             100,
                                     )} / -
                                 {:else}
