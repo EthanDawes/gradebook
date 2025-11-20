@@ -8,16 +8,14 @@
     import EmptyState from "./components/EmptyState.svelte";
 </script>
 
-<div class="flex h-screen">
+<div class="flex">
     <Sidebar />
 
     <!-- Main Content -->
     <div class="flex-1 p-6">
         {#if gradeStore.selectedCourse}
             {@const courseItem = gradeStore.selectedCourse}
-            {@const currentGrade = gradeStore.calculateCourseGrade(
-                courseItem
-            )}
+            {@const currentGrade = gradeStore.calculateCourseGrade(courseItem)}
 
             <CourseHeader {courseItem} {currentGrade} />
             <GradeCutoffs {courseItem} />
