@@ -8,7 +8,7 @@
     import EmptyState from "./components/EmptyState.svelte";
 </script>
 
-<div class="flex">
+<div class="flex min-h-screen">
     <Sidebar />
 
     <!-- Main Content -->
@@ -20,7 +20,7 @@
             <CourseHeader {courseItem} {currentGrade} />
             <GradeCutoffs {courseItem} />
             <GradesTable {courseItem} />
-            <GradeStats {courseItem} />
+            <!-- TODO: implement or add something more relevant <GradeStats {courseItem} /> -->
         {:else}
             <EmptyState />
         {/if}
