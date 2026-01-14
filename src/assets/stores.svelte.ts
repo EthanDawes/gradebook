@@ -305,6 +305,8 @@ class GradeStore {
   removeCategory(categoryIndex: number) {
     if (!this.selectedCourse) return;
 
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
     this.selectedCourse.categories.splice(categoryIndex, 1);
 
     this.save();
