@@ -262,7 +262,9 @@ class GradeStore {
 
   updateDrops(categoryIndex: number) {
     if (!this.selectedCourse) return;
-    const drops = prompt("Enter number of drops");
+    const drops = prompt(
+      "Enter number of drops (REFERENCE ONLY, not factored into grade)",
+    );
     if (drops === null || drops === "") return;
     this.selectedCourse.categories[categoryIndex].drops = parseInt(drops);
     this.save();
