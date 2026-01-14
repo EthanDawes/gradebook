@@ -424,7 +424,7 @@ class GradeStore {
   }
 
   addSemester() {
-    const semesterName = prompt("Enter Semester Name (e.g., Spring 2025)");
+    const semesterName = prompt("Enter Semester Name (e.g., Spring 2018)");
     if (!semesterName) return false; // User cancelled
 
     // Check if semester name already exists

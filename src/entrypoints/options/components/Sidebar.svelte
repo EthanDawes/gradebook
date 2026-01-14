@@ -66,12 +66,14 @@
                     <div class="font-medium text-sm text-gray-900 mb-1">
                         {classItem.name}
                     </div>
-                    <div
-                        class="flex justify-between items-center text-xs text-gray-600"
-                    >
-                        <span>{formatPercentage(percentage)}%</span>
-                        <span class="font-medium">{letterGrade}</span>
-                    </div>
+                    {#if percentage != 0}
+                        <div
+                            class="flex justify-between items-center text-xs text-gray-600"
+                        >
+                            <span>{formatPercentage(percentage)}%</span>
+                            <span class="font-medium">{letterGrade}</span>
+                        </div>
+                    {/if}
                 </button>
             {/each}
         </div>

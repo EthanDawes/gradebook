@@ -43,37 +43,41 @@
             </span>
         {/if}
     </h1>
-    <div class="text-lg">
-        Current Grade:
-        {#if isCurveEnabled() && hasCurve()}
-            {@const uncurvedGrade = calculateUncurvedGrade()}
-            <span class="font-semibold"
-                >{formatPercentage(uncurvedGrade)}% → {formatPercentage(
-                    currentGrade,
-                )}%</span
-            >
-            <span class="ml-2 text-xl font-bold">
-                {gradeStore.getLetterGrade(
-                    uncurvedGrade,
-                    courseItem.gradeCutoffs,
-                )} → {gradeStore.getLetterGrade(
-                    currentGrade,
-                    courseItem.gradeCutoffs,
-                )}
-            </span>
-        {:else}
-            <span class="font-semibold">{formatPercentage(currentGrade)}%</span>
-            <span class="ml-2 text-xl font-bold">
-                {gradeStore.getLetterGrade(
-                    currentGrade,
-                    courseItem.gradeCutoffs,
-                )}
-            </span>
-        {/if}
-        {#if gradeStore.whatIfMode}
-            <span class="ml-3 text-sm text-orange-600 font-medium">
-                (Preview - changes not saved)
-            </span>
-        {/if}
-    </div>
+    {#if calculateUncurvedGrade() != 0}
+        <div class="text-lg">
+            Current Grade:
+            {#if isCurveEnabled() && hasCurve()}
+                {@const uncurvedGrade = calculateUncurvedGrade()}
+                <span class="font-semibold"
+                    >{formatPercentage(uncurvedGrade)}% → {formatPercentage(
+                        currentGrade,
+                    )}%</span
+                >
+                <span class="ml-2 text-xl font-bold">
+                    {gradeStore.getLetterGrade(
+                        uncurvedGrade,
+                        courseItem.gradeCutoffs,
+                    )} → {gradeStore.getLetterGrade(
+                        currentGrade,
+                        courseItem.gradeCutoffs,
+                    )}
+                </span>
+            {:else}
+                <span class="font-semibold"
+                    >{formatPercentage(currentGrade)}%</span
+                >
+                <span class="ml-2 text-xl font-bold">
+                    {gradeStore.getLetterGrade(
+                        currentGrade,
+                        courseItem.gradeCutoffs,
+                    )}
+                </span>
+            {/if}
+            {#if gradeStore.whatIfMode}
+                <span class="ml-3 text-sm text-orange-600 font-medium">
+                    (Preview - changes not saved)
+                </span>
+            {/if}
+        </div>
+    {/if}
 </div>
