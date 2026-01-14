@@ -327,7 +327,7 @@
                                     step="1"
                                     min="0"
                                     max="100"
-                                    value={category.weight * 100}
+                                    value={Math.trunc(category.weight * 100)}
                                     oninput={(e) =>
                                         gradeStore.updateCategory(
                                             categoryIndex,
