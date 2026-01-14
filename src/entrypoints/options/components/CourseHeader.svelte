@@ -30,7 +30,7 @@
 
 <div
     class="mb-6 {gradeStore.whatIfMode
-        ? 'p-4 bg-orange-50 border border-orange-200 rounded-lg sticky top-0 z-50'
+        ? 'p-4 bg-orange-50 border border-orange-200 rounded-lg sticky -top-6 z-50'
         : ''}"
 >
     <h1 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">

@@ -199,7 +199,7 @@
                 {#each courseItem.categories as category, categoryIndex}
                     <!-- Category header row -->
                     <tr
-                        class="bg-gray-50 border-b border-gray-200 sticky -top-6 z-50 group"
+                        class={`bg-gray-50 border-b border-gray-200 sticky ${gradeStore.whatIfMode ? "top-20" : "-top-6"} z-50 group`}
                     >
                         <td class="py-2 px-2">
                             <div class="flex items-center gap-2">
