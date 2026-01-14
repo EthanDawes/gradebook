@@ -260,6 +260,14 @@ class GradeStore {
     this.save();
   }
 
+  updateDrops(categoryIndex: number) {
+    if (!this.selectedCourse) return;
+    const drops = prompt("Enter number of drops");
+    if (drops === null || drops === "") return;
+    this.selectedCourse.categories[categoryIndex].drops = parseInt(drops);
+    this.save();
+  }
+
   updateCategory(categoryIndex: number, field: keyof Category, value: any) {
     if (!this.selectedCourse) return;
 

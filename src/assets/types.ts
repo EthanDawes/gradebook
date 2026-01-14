@@ -26,6 +26,8 @@ export interface Category {
   // Decimal percentage
   weight: number;
   grades: Grade[];
+  // Number of assignments in the category that will be dropped
+  drops?: number;
 }
 
 export interface Grade {

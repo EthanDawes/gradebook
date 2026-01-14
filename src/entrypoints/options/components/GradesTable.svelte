@@ -199,7 +199,7 @@
                 {#each courseItem.categories as category, categoryIndex}
                     <!-- Category header row -->
                     <tr
-                        class="bg-gray-50 border-b border-gray-200 sticky -top-6 z-50"
+                        class="bg-gray-50 border-b border-gray-200 sticky -top-6 z-50 group"
                     >
                         <td class="py-2 px-2">
                             <div class="flex items-center gap-2">
@@ -233,6 +233,36 @@
                                 >
                                     ×
                                 </button>
+                                <!-- category drops button/indicator -->
+                                <div
+                                    class="ml-2 w-5 h-5 flex items-center justify-center"
+                                >
+                                    {#if category.drops}
+                                        <!-- Show category drops if set -->
+                                        <button
+                                            class="text-xs text-gray-600 bg-gray-100 px-1 rounded cursor-pointer border-none"
+                                            title="Category drops: {category.drops} - Click to edit"
+                                            onclick={() =>
+                                                gradeStore.updateDrops(
+                                                    categoryIndex,
+                                                )}
+                                        >
+                                            🆓&nbsp;{category.drops}
+                                        </button>
+                                    {:else}
+                                        <!-- Set drops button (hidden by default, shown on hover) -->
+                                        <button
+                                            class="opacity-0 group-hover:opacity-100 hover:bg-gray-100 focus:opacity-100 focus:bg-gray-100 transition-opacity duration-200 rounded p-1"
+                                            onclick={() =>
+                                                gradeStore.updateDrops(
+                                                    categoryIndex,
+                                                )}
+                                            title="Set category assignment drops"
+                                        >
+                                            🆓&nbsp;0
+                                        </button>
+                                    {/if}
+                                </div>
                             </div>
                         </td>
                         <td class="py-2 px-2 text-center">
