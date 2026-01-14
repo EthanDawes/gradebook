@@ -178,8 +178,8 @@
     </div>
 
     <!-- Single unified table -->
-    <div class="overflow-x-auto">
-        <table class="w-full text-sm border-collapse">
+    <div>
+        <table class="w-full text-sm">
             <thead>
                 <tr class="border-b-2 border-gray-300">
                     <th class="text-left py-3 px-2 text-gray-700 font-medium"
@@ -199,7 +199,9 @@
             <tbody>
                 {#each courseItem.categories as category, categoryIndex}
                     <!-- Category header row -->
-                    <tr class="bg-gray-50 border-b border-gray-200">
+                    <tr
+                        class="bg-gray-50 border-b border-gray-200 sticky -top-6 z-50"
+                    >
                         <td class="py-2 px-2">
                             <div class="flex items-center gap-2">
                                 <input
