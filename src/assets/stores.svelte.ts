@@ -272,12 +272,15 @@ class GradeStore {
   addGrade(
     categoryIndex: number,
     grade: Grade = {
-      title: "New Assignment",
+      title: "",
     },
   ) {
     if (!this.selectedCourse) return;
 
-    this.selectedCourse.categories[categoryIndex].grades.push(grade);
+    const grades = this.selectedCourse.categories[categoryIndex].grades;
+    const firstEmpty = grades.findIndex((g) => g.title === "");
+    if (firstEmpty !== -1 && grade.title !== "") grades[firstEmpty] = grade;
+    else grades.push(grade);
 
     this.save();
   }

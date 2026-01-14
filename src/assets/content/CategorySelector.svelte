@@ -19,8 +19,18 @@
 
     // Yes, I only want to capture the initial value
     if (currentCategoryIdx !== -1 && currentGradeIdx !== -1) {
-        gradeStore.updateGrade(currentCategoryIdx, currentGradeIdx, "pointsEarned", pointsEarned);
-        gradeStore.updateGrade(currentCategoryIdx, currentGradeIdx, "pointsPossible", pointsPossible);
+        gradeStore.updateGrade(
+            currentCategoryIdx,
+            currentGradeIdx,
+            "pointsEarned",
+            pointsEarned,
+        );
+        gradeStore.updateGrade(
+            currentCategoryIdx,
+            currentGradeIdx,
+            "pointsPossible",
+            pointsPossible,
+        );
     }
 
     function handleChange(ev: Event) {

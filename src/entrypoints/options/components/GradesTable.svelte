@@ -135,7 +135,6 @@
         const gradeKey = `${categoryIndex}-${newGradeIndex}`;
         if (gradeInputRefs[gradeKey]) {
             gradeInputRefs[gradeKey].focus();
-            gradeInputRefs[gradeKey].select();
         }
     }
 
@@ -373,6 +372,7 @@
                                         }
                                         class="grade-input"
                                         value={grade.title}
+                                        placeholder={String(gradeIndex + 1)}
                                         oninput={(e) =>
                                             gradeStore.updateGrade(
                                                 categoryIndex,
