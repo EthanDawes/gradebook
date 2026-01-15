@@ -146,7 +146,7 @@
 </script>
 
 <div
-    class="bg-white rounded-lg border border-gray-200 p-4 {gradeStore.whatIfMode
+    class="bg-white rounded-lg border border-gray-200 p-4 min-w-fit {gradeStore.whatIfMode
         ? 'ring-2 ring-orange-300 bg-orange-50'
         : ''}"
 >
