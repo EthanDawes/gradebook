@@ -8,7 +8,7 @@
     import EmptyState from "./components/EmptyState.svelte";
 </script>
 
-<div class="flex h-screen w-fit">
+<div class="flex h-screen w-fit min-w-screen">
     <Sidebar />
 
     <!-- Main Content -->
