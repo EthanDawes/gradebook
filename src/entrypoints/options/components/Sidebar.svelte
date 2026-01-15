@@ -3,10 +3,7 @@
     import { formatPercentage } from "~/assets";
 </script>
 
-<div
-    class="min-w-44 max-w-64 w-1/6 bg-white border-r border-gray-200 p-4"
-    class:grow={gradeStore.selectedCourse}
->
+<div class="min-w-44 max-w-64 w-1/6 bg-white border-r border-gray-200 p-4">
     {#if gradeStore.currentSemester}
         <!-- Semester Dropdown -->
         <div class="mb-6">
