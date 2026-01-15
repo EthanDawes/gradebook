@@ -8,11 +8,11 @@
     import EmptyState from "./components/EmptyState.svelte";
 </script>
 
-<div class="flex h-screen w-fit">
+<div class="flex">
     <Sidebar />
 
     <!-- Main Content -->
-    <div class="flex-1 p-6 overflow-y-auto">
+    <div class="flex-1 p-6 h-screen overflow-y-auto">
         {#if gradeStore.selectedCourse}
             {@const courseItem = gradeStore.selectedCourse}
             {@const currentGrade = gradeStore.calculateCourseGrade(courseItem)}
@@ -26,9 +26,3 @@
         {/if}
     </div>
 </div>
-
-<style>
-    :global(body) {
-        overflow-y: hidden;
-    }
-</style>
