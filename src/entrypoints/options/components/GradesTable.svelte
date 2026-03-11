@@ -64,23 +64,6 @@
         }
     }
 
-    function calculateCurvedGrade(
-        originalGrade: number,
-        classAverage: number,
-    ): number {
-        if (!courseItem.curve || classAverage === undefined) {
-            return originalGrade;
-        }
-
-        const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
-        if (curveCutoff === undefined) {
-            return originalGrade;
-        }
-
-        const curveAdjustment = curveCutoff - classAverage;
-        return originalGrade + curveAdjustment;
-    }
-
     function shouldShowCurve(grade: any): boolean {
         return !!(
             courseItem.curve &&
@@ -95,17 +78,6 @@
             gradeIndex,
             "released",
             Date.now(),
-        );
-    }
-
-    function isGradeInputDisabled(
-        categoryIndex: number,
-        gradeIndex: number,
-    ): boolean {
-        return gradeStore.isGradeInputDisabled(
-            courseItem.name,
-            categoryIndex,
-            gradeIndex,
         );
     }
 
@@ -281,43 +253,16 @@
                                 class="flex items-center justify-center gap-1 text-sm"
                             >
                                 {#if category.grades.some( (g) => shouldShowCurve(g), )}
-                                    {@const uncurvedSum =
+                                    {formatPercentage(
                                         gradeStore.calculateCategorySum(
                                             category,
-                                        )}
-                                    {@const validGrades =
-                                        category.grades.filter(
-                                            (g) =>
-                                                g.pointsPossible &&
-                                                g.pointsPossible > 0 &&
-                                                g.pointsEarned !== undefined,
-                                        )}
-                                    {@const weightPerAssignment =
-                                        validGrades.length > 0
-                                            ? category.weight /
-                                              validGrades.length
-                                            : 0}
-                                    {@const curvedSum =
-                                        validGrades.reduce((sum, grade) => {
-                                            const gradePercent =
-                                                (grade.pointsEarned! /
-                                                    grade.pointsPossible!) *
-                                                100;
-                                            const curvedPercent =
-                                                shouldShowCurve(grade)
-                                                    ? calculateCurvedGrade(
-                                                          gradePercent,
-                                                          grade.classAverage!,
-                                                      )
-                                                    : gradePercent;
-                                            return (
-                                                sum +
-                                                (curvedPercent / 100) *
-                                                    weightPerAssignment
-                                            );
-                                        }, 0) * 100}
-                                    {formatPercentage(uncurvedSum)} → {formatPercentage(
-                                        curvedSum,
+                                        ),
+                                    )} → {formatPercentage(
+                                        gradeStore.calculateCategorySum(
+                                            category,
+                                            courseItem,
+                                            true,
+                                        ),
                                     )}
                                 {:else}
                                     {formatPercentage(
@@ -349,41 +294,16 @@
                         </td>
                         <td class="py-2 px-2 text-center text-sm">
                             {#if category.grades.some( (g) => shouldShowCurve(g), )}
-                                {@const uncurvedAverage =
+                                {formatPercentage(
                                     gradeStore.calculateCategoryAverage(
                                         category,
-                                    )}
-                                {@const validGrades = category.grades.filter(
-                                    (g) =>
-                                        g.pointsPossible &&
-                                        g.pointsPossible > 0 &&
-                                        g.pointsEarned !== undefined,
-                                )}
-                                {@const curvedTotal = validGrades.reduce(
-                                    (sum, grade) => {
-                                        const gradePercent =
-                                            (grade.pointsEarned! /
-                                                grade.pointsPossible!) *
-                                            100;
-                                        const curvedPercent = shouldShowCurve(
-                                            grade,
-                                        )
-                                            ? calculateCurvedGrade(
-                                                  gradePercent,
-                                                  grade.classAverage!,
-                                              )
-                                            : gradePercent;
-                                        return sum + curvedPercent / 100;
-                                    },
-                                    0,
-                                )}
-                                {@const curvedAverage =
-                                    validGrades.length > 0
-                                        ? (curvedTotal / validGrades.length) *
-                                          100
-                                        : 0}
-                                {formatPercentage(uncurvedAverage)} → {formatPercentage(
-                                    curvedAverage,
+                                    ),
+                                )} → {formatPercentage(
+                                    gradeStore.calculateCategoryAverage(
+                                        category,
+                                        courseItem,
+                                        true,
+                                    ),
                                 )} %
                             {:else}
                                 {formatPercentage(
@@ -436,18 +356,9 @@
                                     class="flex items-center justify-center gap-1 group relative"
                                 >
                                     <input
-                                        class="grade-input w-16 text-center {isGradeInputDisabled(
-                                            categoryIndex,
-                                            gradeIndex,
-                                        )
-                                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                                            : ''}"
+                                        class="grade-input w-16 text-center"
                                         type="number"
                                         value={grade.pointsEarned}
-                                        disabled={isGradeInputDisabled(
-                                            categoryIndex,
-                                            gradeIndex,
-                                        )}
                                         oninput={(e) => {
                                             updateReleased(
                                                 categoryIndex,
@@ -463,18 +374,9 @@
                                     />
                                     <span>/</span>
                                     <input
-                                        class="grade-input w-16 text-center {isGradeInputDisabled(
-                                            categoryIndex,
-                                            gradeIndex,
-                                        )
-                                            ? 'bg-gray-100 text-gray-500 cursor-not-allowed'
-                                            : ''}"
+                                        class="grade-input w-16 text-center"
                                         type="number"
                                         value={grade.pointsPossible}
-                                        disabled={isGradeInputDisabled(
-                                            categoryIndex,
-                                            gradeIndex,
-                                        )}
                                         oninput={(e) => {
                                             updateReleased(
                                                 categoryIndex,
@@ -560,10 +462,10 @@
                                                 grade.pointsPossible) *
                                             100}
                                         {@const curvedGradePercent =
-                                            calculateCurvedGrade(
-                                                userGradePercent,
-                                                grade.classAverage!,
-                                            )}
+                                            gradeStore.applyCurveToGrade(
+                                                grade,
+                                                courseItem,
+                                            ) * 100}
                                         {@const curvedWeight =
                                             (curvedGradePercent / 100) *
                                             itemWeight *
@@ -601,10 +503,10 @@
                                         100}
                                     {#if shouldShowCurve(grade)}
                                         {@const curvedPercent =
-                                            calculateCurvedGrade(
-                                                uncurvedPercent,
-                                                grade.classAverage!,
-                                            )}
+                                            gradeStore.applyCurveToGrade(
+                                                grade,
+                                                courseItem,
+                                            ) * 100}
                                         {formatPercentage(uncurvedPercent)}% → {formatPercentage(
                                             curvedPercent,
                                         )}%

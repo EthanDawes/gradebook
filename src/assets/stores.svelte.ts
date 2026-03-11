@@ -112,55 +112,62 @@ class GradeStore {
     this.selectedCourse = courseItem;
   }
 
+  // Returns valid grades after dropping the N lowest-scoring (by %).
+  private getGradesForCalculation(category: Category): Grade[] {
+    const validGrades = category.grades.filter(
+      (grade) =>
+        grade.pointsEarned !== undefined &&
+        grade.pointsPossible !== undefined &&
+        grade.pointsPossible > 0,
+    );
+    if (!category.drops || category.drops <= 0) return validGrades;
+    return [...validGrades]
+      .sort(
+        (a, b) =>
+          a.pointsEarned! / a.pointsPossible! -
+          b.pointsEarned! / b.pointsPossible!,
+      )
+      .slice(category.drops);
+  }
+
+  // Returns the curved grade as a decimal (0–1+). Requires valid pointsEarned/pointsPossible.
+  applyCurveToGrade(grade: Grade, courseItem: Course): number {
+    const uncurved = grade.pointsEarned! / grade.pointsPossible!;
+    if (
+      !courseItem.curve ||
+      courseItem.curve === "" ||
+      grade.classAverage === undefined
+    )
+      return uncurved;
+    const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
+    if (curveCutoff === undefined) return uncurved;
+    return uncurved + (curveCutoff - grade.classAverage) / 100;
+  }
+
   calculateCourseGrade(courseItem: Course, curve = true): number {
     let totalWeightedPoints = 0;
     let totalWeight = 0;
 
     for (const category of courseItem.categories) {
-      if (category.grades.length === 0) continue;
+      const grades = this.getGradesForCalculation(category);
+      if (grades.length === 0) continue;
 
-      // TODO: reimplement curves
-      /*const categoryTotal = category.grades.reduce((sum, grade) => {
-        if (
-          grade.pointsEarned !== undefined &&
-          grade.pointsPossible !== undefined &&
-          grade.pointsPossible > 0
-        ) {
-          let gradePercentage = grade.pointsEarned / grade.pointsPossible;
-
-          // Apply curve if both course curve and grade class average are set
-          if (
-            courseItem.curve &&
-            courseItem.curve !== "" &&
-            grade.classAverage !== undefined
-          ) {
-            const curveCutoff = courseItem.gradeCutoffs[courseItem.curve];
-            if (curveCutoff !== undefined) {
-              const curveAdjustment = (curveCutoff - grade.classAverage) / 100;
-              gradePercentage = Math.min(1, gradePercentage + curveAdjustment);
-            }
-          }
-
-          return sum + gradePercentage;
-        }
-        return sum;
-        }, 0);*/
-
-      const categoryTotal = gradeStore.calculateRawPoints(category);
-      const categoryAvailable = gradeStore.calculateRawPointsPossible(category);
-
-      const validGrades = category.grades.filter(
-        (grade) =>
-          grade.pointsEarned !== undefined &&
-          grade.pointsPossible !== undefined &&
-          grade.pointsPossible > 0,
-      );
-
-      if (validGrades.length > 0) {
-        const categoryAverage = categoryTotal / categoryAvailable;
-        totalWeightedPoints += categoryAverage * category.weight;
-        totalWeight += category.weight;
+      let totalPoints = 0;
+      let totalPossible = 0;
+      for (const grade of grades) {
+        const pct = curve
+          ? this.applyCurveToGrade(grade, courseItem)
+          : grade.pointsEarned! / grade.pointsPossible!;
+        totalPoints += pct * grade.pointsPossible!;
+        totalPossible += grade.pointsPossible!;
       }
+
+      let categoryAverage = totalPoints / totalPossible;
+      // Cap at 100% to prevent extra-credit spillover. Curves are exempt.
+      if (!curve) categoryAverage = Math.min(1, categoryAverage);
+
+      totalWeightedPoints += categoryAverage * category.weight;
+      totalWeight += category.weight;
     }
 
     return totalWeight > 0 ? (totalWeightedPoints / totalWeight) * 100 : 0;
@@ -214,35 +221,45 @@ class GradeStore {
     );
   }
 
-  calculateCategorySum(category: Category): number {
-    if (category.grades.length === 0) return 0;
+  calculateCategorySum(
+    category: Category,
+    courseItem?: Course,
+    curve = false,
+  ): number {
+    const grades = this.getGradesForCalculation(category);
+    if (grades.length === 0) return 0;
 
-    const validGrades = category.grades.filter(
-      (grade) =>
-        grade.pointsEarned !== undefined &&
-        grade.pointsPossible !== undefined &&
-        grade.pointsPossible > 0,
-    );
-
-    if (validGrades.length === 0) return 0;
-
-    const weightPerAssignment = category.weight / validGrades.length;
+    const weightPerAssignment = category.weight / grades.length;
     let totalWeightEarned = 0;
-
-    for (const grade of validGrades) {
-      const gradePercentage = grade.pointsEarned! / grade.pointsPossible!;
-      totalWeightEarned += gradePercentage * weightPerAssignment;
+    for (const grade of grades) {
+      const pct =
+        curve && courseItem
+          ? this.applyCurveToGrade(grade, courseItem)
+          : grade.pointsEarned! / grade.pointsPossible!;
+      totalWeightEarned += pct * weightPerAssignment;
     }
-
     return totalWeightEarned * 100;
   }
 
-  calculateCategoryAverage(category: Category): number {
-    return (
-      (gradeStore.calculateRawPoints(category) /
-        gradeStore.calculateRawPointsPossible(category)) *
-      100
-    );
+  calculateCategoryAverage(
+    category: Category,
+    courseItem?: Course,
+    curve = false,
+  ): number {
+    const grades = this.getGradesForCalculation(category);
+    if (grades.length === 0) return 0;
+
+    let totalPoints = 0;
+    let totalPossible = 0;
+    for (const grade of grades) {
+      const pct =
+        curve && courseItem
+          ? this.applyCurveToGrade(grade, courseItem)
+          : grade.pointsEarned! / grade.pointsPossible!;
+      totalPoints += pct * grade.pointsPossible!;
+      totalPossible += grade.pointsPossible!;
+    }
+    return totalPossible > 0 ? (totalPoints / totalPossible) * 100 : 0;
   }
 
   updateGrade<T extends keyof Grade>(
@@ -263,7 +280,7 @@ class GradeStore {
   updateDrops(categoryIndex: number) {
     if (!this.selectedCourse) return;
     const drops = prompt(
-      "Enter number of drops (REFERENCE ONLY, not factored into grade)",
+      "Enter number of lowest-scoring assignments to drop in this category:",
     );
     if (drops === null || drops === "") return;
     this.selectedCourse.categories[categoryIndex].drops = parseInt(drops);
