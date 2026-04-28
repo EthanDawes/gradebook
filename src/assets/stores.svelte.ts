@@ -130,6 +130,25 @@ class GradeStore {
       .slice(category.drops);
   }
 
+  // Returns true if this grade is one of the N lowest-scoring dropped grades in its category.
+  isGradeDropped(category: Category, grade: Grade): boolean {
+    if (!category.drops || category.drops <= 0) return false;
+    const validGrades = category.grades.filter(
+      (g) =>
+        g.pointsEarned !== undefined &&
+        g.pointsPossible !== undefined &&
+        g.pointsPossible > 0,
+    );
+    const droppedGrades = [...validGrades]
+      .sort(
+        (a, b) =>
+          a.pointsEarned! / a.pointsPossible! -
+          b.pointsEarned! / b.pointsPossible!,
+      )
+      .slice(0, category.drops);
+    return droppedGrades.includes(grade);
+  }
+
   // Returns the curved grade as a decimal (0–1+). Requires valid pointsEarned/pointsPossible.
   applyCurveToGrade(grade: Grade, courseItem: Course): number {
     const uncurved = grade.pointsEarned! / grade.pointsPossible!;

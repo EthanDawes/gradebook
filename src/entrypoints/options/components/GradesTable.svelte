@@ -349,6 +349,14 @@
                                     >
                                         ×
                                     </button>
+                                    {#if gradeStore.isGradeDropped(category, grade)}
+                                        <span
+                                            class="text-xs text-orange-700 bg-orange-100 px-2 py-0.5 rounded-full font-medium"
+                                            title="This score is one of the lowest in the category and will be dropped from your grade calculation"
+                                        >
+                                            score dropped
+                                        </span>
+                                    {/if}
                                 </div>
                             </td>
                             <td class="py-2 px-2 text-center">
