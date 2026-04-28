@@ -18,7 +18,7 @@
         return gradeScale?.scale.includes(courseItem.curve) ?? false;
     }
     
-    let curveToB = $state(isCurveEnabled());
+    let curveToB = $derived(isCurveEnabled());
 </script>
 
 <div class="bg-white rounded-lg border border-gray-200 p-4 mb-6 {gradeStore.whatIfMode ? 'ring-2 ring-orange-300 bg-orange-50' : ''}">
@@ -44,7 +44,7 @@
 
     <div class="mb-3">
         <label class="flex items-center text-sm">
-            <input type="checkbox" bind:checked={curveToB} class="mr-2" onchange={(e) => {
+            <input type="checkbox" checked={curveToB} class="mr-2" onchange={(e) => {
                 if (!(e.target as HTMLInputElement).checked) {
                     gradeStore.updateCourseCurve('');
                 } else {
