@@ -414,6 +414,16 @@ class GradeStore {
     this.save();
   }
 
+  renameCourse() {
+    if (!this.selectedCourse) return;
+
+    const newName = prompt("Enter new course name", this.selectedCourse.name);
+    if (!newName?.trim() || newName === this.selectedCourse.name) return;
+
+    this.selectedCourse.name = newName.trim();
+    this.save();
+  }
+
   addCourse() {
     if (!this.currentSemester && !this.addSemester()) return; // User canceled
 

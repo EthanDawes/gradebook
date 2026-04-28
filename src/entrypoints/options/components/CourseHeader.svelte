@@ -35,6 +35,11 @@
 >
     <h1 class="text-2xl font-bold text-gray-900 mb-2 flex items-center gap-3">
         {courseItem.name}
+        <button
+            onclick={() => gradeStore.renameCourse()}
+            title="Rename course"
+            class="text-base font-normal text-gray-400 hover:text-gray-600 transition-colors"
+        >✏️</button>
         {#if gradeStore.whatIfMode}
             <span
                 class="text-orange-600 bg-orange-100 px-3 py-1 rounded text-sm font-medium"
