@@ -520,6 +520,51 @@ class GradeStore {
     return true;
   }
 
+  readonly DROPPED_SEMESTER_NAME = "Dropped";
+
+  dropCourse(course: Course) {
+    if (!this.currentSemester) return;
+
+    const confirmed = confirm(
+      `Drop "${course.name}"? It will be moved to the "Dropped" semester and can be found there later.`,
+    );
+    if (!confirmed) return;
+
+    // Find or create the "Dropped" semester
+    let droppedSemester = this.storage.semesters.find(
+      (s) => s.name === this.DROPPED_SEMESTER_NAME,
+    );
+
+    if (!droppedSemester) {
+      const placeholder: Semester = {
+        name: this.DROPPED_SEMESTER_NAME,
+        start: Number.MIN_SAFE_INTEGER,
+        end: Number.MAX_SAFE_INTEGER,
+        courses: [],
+      };
+      this.storage.semesters.unshift(placeholder);
+      droppedSemester = this.storage.semesters[0];
+    }
+
+    // Remove course from current semester
+    const courseIndex = this.currentSemester.courses.findIndex(
+      (c) => c.name === course.name,
+    );
+    if (courseIndex === -1) return;
+
+    const [removedCourse] = this.currentSemester.courses.splice(courseIndex, 1);
+
+    // Add to the dropped semester
+    droppedSemester.courses.push(removedCourse);
+
+    // Deselect the course if it was selected
+    if (this.selectedCourse?.name === course.name) {
+      this.selectedCourse = undefined;
+    }
+
+    this.save();
+  }
+
   removeSemester(semester: Semester) {
     if (this.storage.semesters.length <= 1) {
       alert("Cannot delete the last semester");

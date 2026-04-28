@@ -56,25 +56,36 @@
                     classItem.gradeCutoffs,
                 )}
 
-                <button
-                    class="w-full text-left p-3 rounded-lg border-2 transition-colors
-                       {gradeStore.selectedCourse?.name === classItem.name
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'}"
-                    onclick={() => gradeStore.setSelectedCourse(classItem)}
-                >
-                    <div class="font-medium text-sm text-gray-900 mb-1">
-                        {classItem.name}
-                    </div>
-                    {#if percentage != 0}
-                        <div
-                            class="flex justify-between items-center text-xs text-gray-600"
-                        >
-                            <span>{formatPercentage(percentage)}%</span>
-                            <span class="font-medium">{letterGrade}</span>
+                <div class="relative group">
+                    <button
+                        class="w-full text-left p-3 rounded-lg border-2 transition-colors
+                           {gradeStore.selectedCourse?.name === classItem.name
+                            ? 'border-blue-500 bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'}"
+                        onclick={() => gradeStore.setSelectedCourse(classItem)}
+                    >
+                        <div class="font-medium text-sm text-gray-900 mb-1">
+                            {classItem.name}
                         </div>
+                        {#if percentage != 0}
+                            <div
+                                class="flex justify-between items-center text-xs text-gray-600"
+                            >
+                                <span>{formatPercentage(percentage)}%</span>
+                                <span class="font-medium">{letterGrade}</span>
+                            </div>
+                        {/if}
+                    </button>
+                    {#if gradeStore.currentSemester!.name !== gradeStore.DROPPED_SEMESTER_NAME}
+                        <button
+                            class="absolute top-1 right-1 px-1.5 py-0.5 text-xs text-yellow-600 hover:text-yellow-800 hover:bg-yellow-100 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                            onclick={() => gradeStore.dropCourse(classItem)}
+                            title="Drop course (move to Dropped semester)"
+                        >
+                            Drop
+                        </button>
                     {/if}
-                </button>
+                </div>
             {/each}
         </div>
 
