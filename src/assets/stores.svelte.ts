@@ -146,7 +146,7 @@ class GradeStore {
           b.pointsEarned! / b.pointsPossible!,
       )
       .slice(0, category.drops);
-    return droppedGrades.includes(grade);
+    return droppedGrades.some((g) => g === grade);
   }
 
   // Returns the curved grade as a decimal (0–1+). Requires valid pointsEarned/pointsPossible.
